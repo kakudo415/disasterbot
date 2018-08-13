@@ -2,7 +2,7 @@
   "name": "alert",
   "version": "0.0.0",
   "private": true,
-  "author": "Kakudo <kakudo415@gmail.com>",
+  "author": "Kakudo",
   "description": "alert bot for slack",
   "dependencies": {
     "hubot": "^3.1.1",
