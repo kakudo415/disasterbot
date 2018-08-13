@@ -13,6 +13,7 @@ module.exports = (robot) => {
       res.status(404).send('VERIFY_TOKEN ERROR').end();
       return;
     }
+    console.log(query);
     res.status(200).send(query['hub.challenge']).end();
   });
 };
