@@ -8,7 +8,7 @@ const verifyToken = process.env.JMA_VERIFY_TOKEN;
 module.exports = (robot) => {
   robot.router.get('/sub', (req, res) => {
     const query = req.query;
-    if (query['hub.mode'] !== 'subscribe') {
+    if (query['hub.mode'] !== 'subscribe' && query['hub.mode'] !== 'unsubscribe') {
       res.status(404).send('MODE ERROR').end();
       logger.error(JSON.stringify(query));
       return;
@@ -20,5 +20,9 @@ module.exports = (robot) => {
     }
     res.status(200).send(query['hub.challenge']).end();
     logger.info(JSON.stringify(query));
+  });
+  robot.router.post('/sub', (req, res) => {
+    res.status(200).end();
+    logger.info(JSON.stringify(req.body));
   });
 };
