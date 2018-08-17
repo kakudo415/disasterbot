@@ -37,7 +37,7 @@ module.exports = (robot) => {
       }
     });
     feedparser.on('end', () => {
-      console.log(feed);
+      logger.info(feed);
     });
     // robot.send({room: 'alert-room'}, );
     logger.info(JSON.stringify(req.body));
