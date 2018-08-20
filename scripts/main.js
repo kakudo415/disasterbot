@@ -1,11 +1,9 @@
 'use strict';
-let fs = require('fs');
-let log = require('log');
-let feedparser = require('feedparser');
-let logger = new log('debug', fs.createWriteStream('./access_log', {flags: 'a'}));
-let fp = new feedparser();
-
-const verifyToken = process.env.JMA_VERIFY_TOKEN;
+let Fs = require('fs');
+let Log = require('log');
+let FeedParser = require('feedparser');
+let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'}));
+let feedparser = new FeedParser({});
 
 module.exports = (robot) => {
   robot.hear(/!alertbot/, (msg) => {
@@ -19,7 +17,7 @@ module.exports = (robot) => {
       logger.error(JSON.stringify(query));
       return;
     }
-    if (query['hub.verify_token'] !== verifyToken) {
+    if (query['hub.verify_token'] !== process.env.JMA_VERIFY_TOKEN) {
       res.status(404).send('VERIFY_TOKEN ERROR').end();
       logger.error(JSON.stringify(query));
       return;
@@ -29,20 +27,7 @@ module.exports = (robot) => {
   });
 
   robot.router.post('/sub', (req, res) => {
-    let feed;
-    req.on('response', () => {
-      req.pipe(fp);
-    });
-    fp.on('readable', () => {
-      let buffer;
-      while (buffer = this.read()) {
-        feed += buffer;
-      }
-    });
-    fp.on('end', () => {
-      robot.send({room: '災害情報'}, feed);
-      logger.info(feed);
-    });
+    logger.info(req.body);
     res.status(200).end();
   });
 };
