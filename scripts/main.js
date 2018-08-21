@@ -3,8 +3,8 @@ let Fs = require('fs');
 let Log = require('log');
 let FeedParser = require('feedparser');
 let bodyparser = require('body-parser');
+let readable = require('stream').Readable;
 let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'}));
-let feedparser = new FeedParser({});
 
 module.exports = (robot) => {
   robot.router.use(bodyparser.text({type: '*/*'}));
@@ -30,7 +30,23 @@ module.exports = (robot) => {
   });
 
   robot.router.post('/sub', (req, res) => {
-    robot.send({room: '災害情報'}, JSON.stringify(req.body));
+    let feeds = [];
+    let stream = new readable;
+    let feedparser = new FeedParser({});
+    stream.push(req.body);
+    stream.push(null);
+    stream.pipe(feedparser);
+    feedparser.on('readable', () => {
+      let data;
+      while (data = feedparser.read()) {
+        feeds.push(data);
+      }
+    });
+    feedparser.on('end', () => {
+      feeds.forEach((feed) => {
+        robot.send({room: '災害情報'}, `>>>*${feed.title}*\n${feed.description}`);
+      });
+    });
     res.status(200).end();
     logger.info(req.body);
   });
