@@ -27,7 +27,8 @@ module.exports = (robot) => {
   });
 
   robot.router.post('/sub', (req, res) => {
-    logger.info(req.body);
+    robot.send({room: '災害情報'}, JSON.stringify(req.body));
     res.status(200).end();
+    logger.info(req.body);
   });
 };
