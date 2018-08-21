@@ -5,6 +5,7 @@
   "author": "Kakudo",
   "description": "alert bot for slack",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "feedparser": "^2.2.9",
     "hubot": "^3.1.1",
     "hubot-diagnostics": "0.0.2",

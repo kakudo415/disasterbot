@@ -2,10 +2,13 @@
 let Fs = require('fs');
 let Log = require('log');
 let FeedParser = require('feedparser');
+let bodyparser = require('body-parser');
 let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'}));
 let feedparser = new FeedParser({});
 
 module.exports = (robot) => {
+  robot.router.use(bodyparser.raw({type: '*/*'}));
+
   robot.hear(/!alertbot/, (msg) => {
     msg.send('私は気象庁から警報などの情報を取得し、お伝えします');
   });
