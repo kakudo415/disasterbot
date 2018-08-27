@@ -69,7 +69,7 @@ module.exports = (robot) => {
                 message += `*${Report.Head.Title}（${time}）*\n` +
                     `震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\n` +
                     `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._}\n` +
-                    `その他 : ${Report.Body.Comments.ForecastComment.Text}`;
+                    `• ${Report.Body.Comments.ForecastComment.Text}`;
                 break;
               case '噴火に関する火山観測報':
                 message += `*${Report.Head.InfoKind}（${time}）*\n` +
@@ -77,7 +77,7 @@ module.exports = (robot) => {
                     `現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
                 break;
               case '降灰予報':
-                break;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               default:
                 message += `*${Report.Head.Title}*\n` +
                     `説明 : ${Report.Head.Headline.Text}`;
