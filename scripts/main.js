@@ -1,7 +1,9 @@
 'use strict';
 let Fs = require('fs');
 let Log = require('log');
+let request = require('request');
 let FeedParser = require('feedparser');
+let xml2js = require('xml2js');
 let bodyparser = require('body-parser');
 let readable = require('stream').Readable;
 let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'}));
@@ -44,7 +46,34 @@ module.exports = (robot) => {
     });
     feedparser.on('end', () => {
       feeds.forEach((feed) => {
-        robot.send({room: '災害情報'}, `>>>*${feed.title}*\n${feed.description}`);
+        if (!feed.link.startsWith('http://xml.kishou.go.jp/')) {
+          logger.info('"http://xml.kishou.go.jp/"で始まらない情報リンク、スキップしました');
+          return;
+        }
+        request.get(feed.link, (feedErr, feedRes, feedBody) => {
+          if (feedErr) {
+            logger.error(feedErr.message);
+            return;
+          }
+          xml2js.parseString(feedBody, {trim: true, explicitArray: false}, (parseErr, parseResult) => {
+            let Report = parseResult.Report;
+            if (Report.Control.Status !== '通常') {
+              logger.info('通常では無い情報（訓練など）、スキップしました');
+              return;
+            }
+            switch (Report.Head.InfoKind) {
+              case '地震情報':
+                console.log(Report.Body.Earthquake);
+                robot.send({room: '災害情報'}, `>>>*${Report.Head.Title}*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._} (単位 : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.type})\n付加文: ${Report.Body.Comments.ForecastComment.Text}`);
+                break;
+              case '降灰予報':
+                // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                break;
+              default:
+                robot.send({room: '災害情報'}, `>>>*${Report.Head.Title}*\n説明 : ${Report.Head.Headline.Text}`);
+            }
+          });
+        });
       });
     });
     res.status(200).end();
