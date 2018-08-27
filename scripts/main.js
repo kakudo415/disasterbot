@@ -68,7 +68,7 @@ module.exports = (robot) => {
                 break;
               case '降灰予報':
                 // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
-                break;
+                return;
               default:
                 message = `>>>*${Report.Head.Title}*\n説明 : ${Report.Head.Headline.Text}\n`;
             }
