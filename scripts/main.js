@@ -69,7 +69,7 @@ module.exports = (robot) => {
                 message += `*${Report.Head.Title}（${time}）*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.description}\n付加文: ${Report.Body.Comments.ForecastComment.Text}`;
                 break;
               case '噴火に関する火山観測報':
-                message += `*${Report.Head.InfoKind}（${time}）*\n火山名 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
+                message += `*${Report.Head.InfoKind}（${time}）*\n場所 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
                 break;
               case '降灰予報':
                 break;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
