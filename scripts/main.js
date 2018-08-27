@@ -66,15 +66,21 @@ module.exports = (robot) => {
             let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${Report.Head.InfoType}`;
             switch (Report.Head.InfoKind) {
               case '地震情報':
-                message += `*${Report.Head.Title}（${time}）*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.description}\n付加文: ${Report.Body.Comments.ForecastComment.Text}`;
+                message += `*${Report.Head.Title}（${time}）*\n` +
+                    `震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\n` +
+                    `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._}\n` +
+                    `その他 : ${Report.Body.Comments.ForecastComment.Text}`;
                 break;
               case '噴火に関する火山観測報':
-                message += `*${Report.Head.InfoKind}（${time}）*\n場所 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
+                message += `*${Report.Head.InfoKind}（${time}）*\n` +
+                    `場所 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n` +
+                    `現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
                 break;
               case '降灰予報':
                 break;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               default:
-                message += `*${Report.Head.Title}*\n説明 : ${Report.Head.Headline.Text}`;
+                message += `*${Report.Head.Title}*\n` +
+                    `説明 : ${Report.Head.Headline.Text}`;
             }
             robot.send({room: '災害情報'}, message);
           });
