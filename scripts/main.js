@@ -67,9 +67,13 @@ module.exports = (robot) => {
             switch (Report.Head.InfoKind) {
               case '地震情報':
                 message += `*${Report.Head.Title}（${time}）*\n` +
-                    `震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\n` +
-                    `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._}\n` +
-                    `• ${Report.Body.Comments.ForecastComment.Text}`;
+                    `震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\n`;
+                if (Report.Body.Earthquake['jmx_eb:Magnitude'].$.condition === '不明') {
+                  message += `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.description}\n`;
+                } else {
+                  message += `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._}\n`;
+                }
+                message += `${Report.Body.Comments.ForecastComment.Text}`;
                 break;
               case '噴火に関する火山観測報':
                 message += `*${Report.Head.InfoKind}（${time}）*\n` +
@@ -80,7 +84,7 @@ module.exports = (robot) => {
                 return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               default:
                 message += `*${Report.Head.Title}*\n` +
-                    `説明 : ${Report.Head.Headline.Text}`;
+                    `${Report.Head.Headline.Text}`;
             }
             robot.send({room: '災害情報'}, message);
           });
