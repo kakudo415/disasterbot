@@ -63,7 +63,7 @@ module.exports = (robot) => {
             }
             let message = '>>>';
             let date = new Date(Report.Head.ReportDateTime);
-            let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${date.getSeconds()}秒 ${Report.Head.InfoType}`;
+            let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${Report.Head.InfoType}`;
             switch (Report.Head.InfoKind) {
               case '地震情報':
                 message += `*${Report.Head.Title}（${time}）*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.description}\n付加文: ${Report.Body.Comments.ForecastComment.Text}`;
