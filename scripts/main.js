@@ -61,17 +61,20 @@ module.exports = (robot) => {
               logger.info('通常では無い情報（訓練など）、スキップしました');
               return;
             }
+            let message;
             switch (Report.Head.InfoKind) {
               case '地震情報':
-                console.log(Report.Body.Earthquake);
-                robot.send({room: '災害情報'}, `>>>*${Report.Head.Title}*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._} (単位 : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.type})\n付加文: ${Report.Body.Comments.ForecastComment.Text}`);
+                message = `>>>*${Report.Head.Title}*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._} (${Report.Body.Earthquake['jmx_eb:Magnitude'].$.type})\n付加文: ${Report.Body.Comments.ForecastComment.Text}\n`;
                 break;
               case '降灰予報':
                 // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
                 break;
               default:
-                robot.send({room: '災害情報'}, `>>>*${Report.Head.Title}*\n説明 : ${Report.Head.Headline.Text}`);
+                message = `>>>*${Report.Head.Title}*\n説明 : ${Report.Head.Headline.Text}\n`;
             }
+            let date = new Date(Report.Head.ReportDateTime);
+            message += `>${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${date.getSeconds()}秒 ${Report.Head.InfoType}`;
+            robot.send({room: '災害情報'}, message);
           });
         });
       });
