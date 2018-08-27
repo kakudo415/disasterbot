@@ -62,18 +62,17 @@ module.exports = (robot) => {
               return;
             }
             let message;
+            let date = new Date(Report.Head.ReportDateTime);
+            let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${date.getSeconds()}秒 ${Report.Head.InfoType}`;
             switch (Report.Head.InfoKind) {
               case '地震情報':
-                message = `>>>*${Report.Head.Title}*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._} (${Report.Body.Earthquake['jmx_eb:Magnitude'].$.type})\n付加文: ${Report.Body.Comments.ForecastComment.Text}\n`;
+                message = `>>>*${Report.Head.Title}（${time}）*\n震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\nマグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._} (${Report.Body.Earthquake['jmx_eb:Magnitude'].$.type})\n付加文: ${Report.Body.Comments.ForecastComment.Text}`;
                 break;
               case '降灰予報':
-                // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
-                return;
+                break;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               default:
                 message = `>>>*${Report.Head.Title}*\n説明 : ${Report.Head.Headline.Text}\n`;
             }
-            let date = new Date(Report.Head.ReportDateTime);
-            message += `>${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${date.getSeconds()}秒 ${Report.Head.InfoType}`;
             robot.send({room: '災害情報'}, message);
           });
         });
