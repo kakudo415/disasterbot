@@ -80,11 +80,12 @@ module.exports = (robot) => {
                     `場所 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n` +
                     `現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
                 break;
+              case '火山の状況に関する解説情報':
+                return;  // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '降灰予報':
                 return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               default:
-                message += `*${Report.Head.Title}*\n` +
-                    `${Report.Head.Headline.Text}`;
+                message += `*${Report.Head.Title}*\n${Report.Head.Headline.Text}`;
             }
             robot.send({room: '災害情報'}, message);
           });
