@@ -55,16 +55,16 @@ module.exports = (robot) => {
             logger.error(feedErr.message);
             return;
           }
-          xml2js.parseString(feedBody, {trim: true, explicitArray: false}, (parseErr, parseResult) => {
+          xml2js.parseString(feedBody, (parseErr, parseResult) => {
             let Report = parseResult.Report;
-            if (Report.Control.Status !== '通常') {
+            if (Report.Control[0].Status[0] !== '通常') {
               logger.info('通常では無い情報（訓練など）、スキップしました');
               return;
             }
             let message = '>>>';
-            let date = new Date(Report.Head.ReportDateTime);
-            let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${Report.Head.InfoType}`;
-            switch (Report.Head.InfoKind) {  // 運用種別情報
+            let date = new Date(Report.Head[0].ReportDateTime[0]);
+            let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${Report.Head[0].InfoType[0]}`;
+            switch (Report.Head[0].InfoKind[0]) {  // 運用種別情報
               // case '震度速報':
               //   break;
               // case '震源速報':
@@ -76,19 +76,19 @@ module.exports = (robot) => {
               // case '地震の活動状況等に関する情報':
               //   break;
               case '地震情報':
-                message += `*${Report.Head.Title}（${time}）*\n` +
-                    `震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\n`;
-                if (Report.Body.Earthquake['jmx_eb:Magnitude'].$.condition === '不明') {
-                  message += `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.description}\n`;
+                message += `*${Report.Head[0].Title[0]}（${time}）*\n` +
+                    `震央地 : ${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}\n`;
+                if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
+                  message += `マグニチュード : ${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}\n`;
                 } else {
-                  let m = Number(Report.Body.Earthquake['jmx_eb:Magnitude']._);
+                  let m = Number(Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._);
                   message += `マグニチュード : ${m}`;
                   if (m >= 5) {
                     message += ' @here';
                   }
                   message += '\n';
                 }
-                message += `${Report.Body.Comments.ForecastComment.Text}`;
+                message += `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`;
                 break;
               // case '津波情報':
               //   break;
@@ -99,16 +99,16 @@ module.exports = (robot) => {
               case '火山の状況に関する解説情報':
                 return;  // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '噴火に関する火山観測報':
-                message += `*${Report.Head.InfoKind}（${time}）*\n` +
-                    `場所 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n` +
-                    `現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
+                message += `*${Report.Head[0].InfoKind[0]}（${time}）*\n` +
+                    `場所 : ${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].Name[0]} ${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].CraterName[0]}\n` +
+                    `現象 : ${Report.Body[0].VolcanoInfo[0].Item[0].Kind[0].Name[0]}`;
                 break;
               case '降灰予報':
                 return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               // case '噴火速報':
               //   break;
               default:
-                message += `*${Report.Head.Title}*\n${Report.Head.Headline.Text}`;
+                message += `*${Report.Head[0].Title[0]}*\n${Report.Head[0].Headline[0].Text[0]}`;
             }
             robot.send({room: '災害情報'}, message);
           });
