@@ -11,8 +11,8 @@ let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'})
 module.exports = (robot) => {
   robot.router.use(bodyparser.text({type: '*/*'}));
 
-  robot.hear(/!alertbot/, (msg) => {
-    msg.send('私は気象庁から警報などの情報を取得し、お伝えします');
+  robot.hear(/(!|！)(alertbot|災害情報)/, (msg) => {
+    msg.send('私は気象庁から地震・火山などの情報を取得し、 #災害情報 チャンネルに投稿します');
   });
 
   robot.router.get('/sub', (req, res) => {
