@@ -71,7 +71,12 @@ module.exports = (robot) => {
                 if (Report.Body.Earthquake['jmx_eb:Magnitude'].$.condition === '不明') {
                   message += `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude'].$.description}\n`;
                 } else {
-                  message += `マグニチュード : ${Report.Body.Earthquake['jmx_eb:Magnitude']._}\n`;
+                  let m = Number(Report.Body.Earthquake['jmx_eb:Magnitude']._);
+                  message += `マグニチュード : ${m}`;
+                  if (m >= 5) {
+                    message += ' @here';
+                  }
+                  message += '\n';
                 }
                 message += `${Report.Body.Comments.ForecastComment.Text}`;
                 break;
