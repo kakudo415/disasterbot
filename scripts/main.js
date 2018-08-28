@@ -64,7 +64,17 @@ module.exports = (robot) => {
             let message = '>>>';
             let date = new Date(Report.Head.ReportDateTime);
             let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${Report.Head.InfoType}`;
-            switch (Report.Head.InfoKind) {
+            switch (Report.Head.InfoKind) {  // 運用種別情報
+              // case '震度速報':
+              //   break;
+              // case '震源速報':
+              //   break;
+              // case '震源要素更新のお知らせ':
+              //   break;
+              // case '地震回数情報':
+              //   break;
+              // case '地震の活動状況等に関する情報':
+              //   break;
               case '地震情報':
                 message += `*${Report.Head.Title}（${time}）*\n` +
                     `震央地 : ${Report.Body.Earthquake.Hypocenter.Area.Name}\n`;
@@ -80,15 +90,23 @@ module.exports = (robot) => {
                 }
                 message += `${Report.Body.Comments.ForecastComment.Text}`;
                 break;
+              // case '津波情報':
+              //   break;
+              // case '津波警報・注意報・予報':
+              //   break;
+              case '東海地震関連情報':
+                return;  // 東海地震関連情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+              case '火山の状況に関する解説情報':
+                return;  // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '噴火に関する火山観測報':
                 message += `*${Report.Head.InfoKind}（${time}）*\n` +
                     `場所 : ${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}\n` +
                     `現象 : ${Report.Body.VolcanoInfo.Item.Kind.Name}`;
                 break;
-              case '火山の状況に関する解説情報':
-                return;  // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '降灰予報':
                 return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+              // case '噴火速報':
+              //   break;
               default:
                 message += `*${Report.Head.Title}*\n${Report.Head.Headline.Text}`;
             }
