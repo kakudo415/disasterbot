@@ -8,6 +8,8 @@ let bodyparser = require('body-parser');
 let readable = require('stream').Readable;
 let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'}));
 
+const iso6709 = /[\+\-].*[\+\-].*[\+\-](.*)\//;
+
 module.exports = (robot) => {
   robot.router.use(bodyparser.text({type: '*/*'}));
 
@@ -83,7 +85,8 @@ module.exports = (robot) => {
 
               case '震源速報':
                 message += `*震源速報（${time}）*\n` +
-                    `震央地：${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}\n`;
+                    `震源：${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]} ` +
+                    `深さ ${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km\n`;
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
                   message += `マグニチュード：${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}\n`;
                 } else {
@@ -97,18 +100,10 @@ module.exports = (robot) => {
                 message += `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`;
                 break;
 
-                // case '震源要素更新のお知らせ':
-                //   break;
-
-                // case '地震回数情報':
-                //   break;
-
-                // case '地震の活動状況等に関する情報':
-                //   break;
-
               case '地震情報':
-                message += `*${Report.Head[0].Title[0]}（${time}）*\n` +
-                    `震央地：${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}\n`;
+                message += `*地震情報（${time}）*\n` +
+                    `震源：${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]} ` +
+                    `深さ ${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km\n`;
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
                   message += `マグニチュード：${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}\n`;
                 } else {
@@ -137,6 +132,12 @@ module.exports = (robot) => {
                     `現象：${Report.Body[0].VolcanoInfo[0].Item[0].Kind[0].Name[0]}`;
                 break;
 
+              case '地震の活動状況等に関する情報':
+                return;  // 地震の活動状況等に関する情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+              case '震源要素更新のお知らせ':
+                return;  // 震源要素更新のお知らせはこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+              case '地震回数情報':
+                return;  // 地震回数情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '降灰予報':
                 return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '東海地震関連情報':
