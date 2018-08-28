@@ -114,6 +114,7 @@ module.exports = (robot) => {
                   }
                   message += '\n';
                 }
+                message += `最大震度：${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}\n`;
                 message += `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`;
                 break;
 
@@ -123,8 +124,14 @@ module.exports = (robot) => {
                 // case '津波警報・注意報・予報':
                 //   break;
 
-                // case '噴火速報':
-                //   break;
+              case '噴火速報':
+                message += `*噴火速報（${time}）*\n` +
+                    `火山名：`;
+                Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area.forEach((area) => {
+                  message += `${area.Name[0]} `;
+                });
+                message += `@here`;
+                break;
 
               case '噴火に関する火山観測報':
                 message += `*${Report.Head[0].InfoKind[0]}（${time}）*\n` +
