@@ -64,22 +64,33 @@ module.exports = (robot) => {
               return;
             }
             let msg = new Object;
-            let date = new Date(Report.Head[0].ReportDateTime[0]);
-            let time = `${date.getFullYear()}年 ${date.getMonth() + 1}月 ${date.getDate()}日 ${date.getHours()}時 ${date.getMinutes()}分 ${Report.Head[0].InfoType[0]}`;
+            let timestamp = Math.floor(new Date(Report.Head[0].ReportDateTime[0]).getTime() / 1000);
             switch (Report.Head[0].InfoKind[0]) {  // 運用種別情報
               case '震度速報':
                 let maxInt = Report.Body[0].Intensity[0].Observation[0].MaxInt[0];
-                msg += `*震度速報（${time}）*\n` +
-                    `最大震度：${maxInt}`;
-                if (maxInt == '5-' || maxInt == '5+' || maxInt == '6-' || maxInt == '6+' || maxInt == '7') {
-                  msg += ` @here`;
-                }
-                msg += '\n';
-                msg += `最大震度を観測した地域：`;
+                msg.attachments = [{
+                  title: `${Report.Head[0].Title[0]}`,
+                  footer: `${Report.Head[0].InfoType[0]}`,
+                  fields: [
+                    {
+                      title: `最大震度`,
+                      value: `${maxInt}`,
+                      short: true
+                    }
+                  ],
+                  ts: `${timestamp}`,
+                  color: `#795548`
+                }];
+                let maxIntArea = '';
                 Report.Body[0].Intensity[0].Observation[0].Pref.forEach((pref) => {
                   if (pref.MaxInt[0] == maxInt) {
-                    msg += `${pref.Name[0]} `;
+                    maxIntArea += `${pref.Name[0]} `;
                   }
+                });
+                msg.attachments[0].fields.push({
+                  title: `最大震度を観測した地域`,
+                  value: `${maxIntArea}`,
+                  short: false
                 });
                 break;
 
@@ -117,7 +128,7 @@ module.exports = (robot) => {
                       }
                     ],
                     footer: `${Report.Head[0].InfoType[0]}`,
-                    ts: `${Math.floor(date.getTime() / 1000)}`,
+                    ts: `${timestamp}`,
                     color: `#795548`
                   }
                 ];
