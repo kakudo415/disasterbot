@@ -128,17 +128,24 @@ module.exports = (robot) => {
                       title: `震央地`,
                       value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
                       short: true
-                    },
-                    {
-                      title: `深さ`,
-                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
-                      short: true
                     }
                   ],
                   footer: `${Report.Head[0].InfoType[0]}`,
                   ts: `${timestamp}`,
                   color: `#795548`
                 }];
+                let depth = '';
+                let point = Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709);
+                if (point === null) {
+                  depth = '不明';
+                } else {
+                  depth = `${Math.floor(depth[1] / 1000)}km`;
+                }
+                msg.attachments[0].fields.push({
+                  title: `深さ`,
+                  value: `${depth}`,
+                  short: true
+                });
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
                   msg.attachments[0].fields.push({
                     title: `マグニチュード`,
@@ -152,11 +159,19 @@ module.exports = (robot) => {
                     short: true
                   });
                 }
-                msg.attachments[0].fields.push({
-                  title: `最大震度`,
-                  value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
-                  short: true
-                });
+                if (Report.Body[0].Intensity) {
+                  msg.attachments[0].fields.push({
+                    title: `最大震度`,
+                    value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
+                    short: true
+                  });
+                } else {
+                  msg.attachments[0].fields.push({
+                    title: `最大震度`,
+                    value: `不明`,
+                    short: true
+                  });
+                }
                 msg.attachments[0].fields.push({
                   title: `その他`,
                   value: `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`,
