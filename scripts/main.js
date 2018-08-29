@@ -95,26 +95,24 @@ module.exports = (robot) => {
                 break;
 
               case '震源速報':
-                msg.attachments = [
-                  {
-                    author_name: `${Report.Head[0].Title[0]}`,
-                    fields: [
-                      {
-                        title: `震央地`,
-                        value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
-                        short: true
-                      },
-                      {
-                        title: `深さ`,
-                        value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
-                        short: true
-                      }
-                    ],
-                    footer: `${Report.Head[0].InfoType[0]}`,
-                    ts: `${timestamp}`,
-                    color: `#795548`
-                  }
-                ];
+                msg.attachments = [{
+                  author_name: `${Report.Head[0].Title[0]}`,
+                  fields: [
+                    {
+                      title: `震央地`,
+                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
+                      short: true
+                    },
+                    {
+                      title: `深さ`,
+                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
+                      short: true
+                    }
+                  ],
+                  footer: `${Report.Head[0].InfoType[0]}`,
+                  ts: `${timestamp}`,
+                  color: `#795548`
+                }];
                 msg.attachments[0].fields.push({
                   title: `その他`,
                   value: `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`,
@@ -123,26 +121,24 @@ module.exports = (robot) => {
                 break;
 
               case '地震情報':
-                msg.attachments = [
-                  {
-                    author_name: `${Report.Head[0].Title[0]}`,
-                    fields: [
-                      {
-                        title: `震央地`,
-                        value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
-                        short: true
-                      },
-                      {
-                        title: `深さ`,
-                        value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
-                        short: true
-                      }
-                    ],
-                    footer: `${Report.Head[0].InfoType[0]}`,
-                    ts: `${timestamp}`,
-                    color: `#795548`
-                  }
-                ];
+                msg.attachments = [{
+                  author_name: `${Report.Head[0].Title[0]}`,
+                  fields: [
+                    {
+                      title: `震央地`,
+                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
+                      short: true
+                    },
+                    {
+                      title: `深さ`,
+                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
+                      short: true
+                    }
+                  ],
+                  footer: `${Report.Head[0].InfoType[0]}`,
+                  ts: `${timestamp}`,
+                  color: `#795548`
+                }];
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
                   msg.attachments[0].fields.push({
                     title: `マグニチュード`,
@@ -175,18 +171,44 @@ module.exports = (robot) => {
                 //   break;
 
               case '噴火速報':
-                msg += `*噴火速報（${time}）*\n` +
-                    `火山名：`;
+                let areas = '';
                 Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area.forEach((area) => {
-                  msg += `${area.Name[0]} `;
+                  areas += `${area.Name[0]} `;
                 });
-                msg += `@here`;
+                msg.attachments = [{
+                  author_name: `${Report.Head[0].Title[0]}`,
+                  fields: [
+                    {
+                      title: `火山名`,
+                      value: areas,
+                      short: false
+                    }
+                  ],
+                  footer: `${Report.Head[0].InfoType[0]}`,
+                  ts: `${timestamp}`,
+                  color: `#FF5722`
+                }];
                 break;
 
               case '噴火に関する火山観測報':
-                msg += `*${Report.Head[0].InfoKind[0]}（${time}）*\n` +
-                    `場所：${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].Name[0]} ${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].CraterName[0]}\n` +
-                    `現象：${Report.Body[0].VolcanoInfo[0].Item[0].Kind[0].Name[0]}`;
+                msg.attachments = [{
+                  author_name: `${Report.Head[0].InfoKind[0]}`,
+                  fields: [
+                    {
+                      title: `場所`,
+                      value: `${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].Name[0]} ${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].CraterName[0]}`,
+                      short: true
+                    },
+                    {
+                      title: `現象`,
+                      value: `${Report.Body[0].VolcanoInfo[0].Item[0].Kind[0].Name[0]}`,
+                      short: true
+                    }
+                  ],
+                  footer: `${Report.Head[0].InfoType[0]}`,
+                  ts: `${timestamp}`,
+                  color: `#FF5722`
+                }];
                 break;
 
                 // case '噴火警報・予報':
