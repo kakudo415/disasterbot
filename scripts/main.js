@@ -139,7 +139,7 @@ module.exports = (robot) => {
                 if (point === null) {
                   depth = '不明';
                 } else {
-                  depth = `${Math.floor(depth[1] / 1000)}km`;
+                  depth = `${Math.floor(Number(point[1]) / 1000)}km`;
                 }
                 msg.attachments[0].fields.push({
                   title: `深さ`,
