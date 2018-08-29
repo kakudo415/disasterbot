@@ -69,17 +69,17 @@ module.exports = (robot) => {
               case '震度速報':
                 let maxInt = Report.Body[0].Intensity[0].Observation[0].MaxInt[0];
                 msg.attachments = [{
-                  title: `${Report.Head[0].Title[0]}`,
-                  footer: `${Report.Head[0].InfoType[0]}`,
-                  fields: [
+                  'author_name': `${Report.Head[0].Title[0]}`,
+                  'footer': `${Report.Head[0].InfoType[0]}`,
+                  'fields': [
                     {
-                      title: `最大震度`,
-                      value: `${maxInt}`,
-                      short: true
+                      'title': `最大震度`,
+                      'value': `${maxInt}`,
+                      'short': true
                     }
                   ],
-                  ts: `${timestamp}`,
-                  color: `#795548`
+                  'ts': `${timestamp}`,
+                  'color': `#795548`
                 }];
                 let maxIntArea = '';
                 Report.Body[0].Intensity[0].Observation[0].Pref.forEach((pref) => {
@@ -88,72 +88,83 @@ module.exports = (robot) => {
                   }
                 });
                 msg.attachments[0].fields.push({
-                  title: `最大震度を観測した地域`,
-                  value: `${maxIntArea}`,
-                  short: false
+                  'title': `最大震度を観測した地域`,
+                  'value': `${maxIntArea}`,
+                  'short': false
                 });
                 break;
 
               case '震源速報':
-                msg += `*震源速報（${time}）*\n` +
-                    `震源：${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]} ` +
-                    `深さ ${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km\n`;
-                if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
-                  msg += `マグニチュード：${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}\n`;
-                } else {
-                  let m = Number(Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._);
-                  msg += `マグニチュード：${m}`;
-                  if (m >= 5) {
-                    msg += ' @here';
+                msg.attachments = [
+                  {
+                    'author_name': `${Report.Head[0].Title[0]}`,
+                    'fields': [
+                      {
+                        'title': `震央地`,
+                        'value': `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
+                        'short': true
+                      },
+                      {
+                        'title': `深さ`,
+                        'value': `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
+                        'short': true
+                      }
+                    ],
+                    'footer': `${Report.Head[0].InfoType[0]}`,
+                    'ts': `${timestamp}`,
+                    'color': `#795548`
                   }
-                  msg += '\n';
-                }
-                msg += `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`;
+                ];
+                msg.attachments[0].fields.push({
+                  'title': `その他`,
+                  'value': `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`,
+                  'short': false
+                });
                 break;
 
               case '地震情報':
                 msg.attachments = [
                   {
-                    title: `${Report.Head[0].Title[0]}`,
-                    fields: [
+                    'author_name': `${Report.Head[0].Title[0]}`,
+                    'fields': [
                       {
-                        title: `震央地`,
-                        value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
-                        short: true
+                        'title': `震央地`,
+                        'value': `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
+                        'short': true
                       },
                       {
-                        title: `深さ`,
-                        value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
-                        short: true
+                        'title': `深さ`,
+                        'value': `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
+                        'short': true
                       }
                     ],
-                    footer: `${Report.Head[0].InfoType[0]}`,
-                    ts: `${timestamp}`,
-                    color: `#795548`
+                    'footer': `${Report.Head[0].InfoType[0]}`,
+                    'ts': `${timestamp}`,
+                    'color': `#795548`
                   }
                 ];
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
                   msg.attachments[0].fields.push({
-                    title: `マグニチュード`,
-                    value: `${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}`,
-                    short: true
+                    'title': `マグニチュード`,
+                    'value': `${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}`,
+                    'short': true
                   });
                 } else {
                   msg.attachments[0].fields.push({
-                    title: `マグニチュード`,
-                    value: `${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._}`,
-                    short: true
+                    'title': `マグニチュード`,
+                    'value': `${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._}`,
+                    'short': true
                   });
                 }
                 msg.attachments[0].fields.push({
-                  title: `最大震度`,
-                  value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
-                  short: true
+                  'title': `最大震度`,
+                  'value': `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
+                  'short': true
                 });
                 msg.attachments[0].fields.push({
-                  title: `その他`,
-                  value: `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`,
-                  short: false
+                  'title': `その他`,
+                  'value': `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`,
+                  'short': false
                 });
                 break;
 
