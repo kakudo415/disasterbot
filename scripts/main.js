@@ -10,6 +10,30 @@ let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'})
 
 const iso6709 = /[\+\-].*[\+\-].*[\+\-](.*)\//;
 
+const toFullWith = (input) => {
+  input = String(input);
+  return input.replace(/[ -~]/g, (c) => {
+    return String.fromCharCode(c.charCodeAt(0) + 0xFEE0);
+  });
+};
+
+const depth = (input) => {
+  let match = input.match(iso6709);
+  let d;
+  if (match === null) {
+    return '不明';
+  } else {
+    d = Math.floor(Number(match[1]) / 1000);
+    if (d === 0) {
+      return 'ごく浅い';
+    } else if (d > 600) {
+      return '６００キロ以上';
+    } else {
+      return toFullWith(d) + 'キロ';
+    }
+  }
+};
+
 module.exports = (robot) => {
   robot.router.use(bodyparser.text({type: '*/*'}));
 
@@ -73,7 +97,7 @@ module.exports = (robot) => {
                   fields: [
                     {
                       title: `最大震度`,
-                      value: `${maxInt}`,
+                      value: `${toFullWith(maxInt)}`,
                       short: true
                     }
                   ]
@@ -99,14 +123,14 @@ module.exports = (robot) => {
                       title: `震央地`,
                       value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
                       short: true
-                    },
-                    {
-                      title: `深さ`,
-                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709)[1] / 1000}km`,
-                      short: true
                     }
                   ]
                 }];
+                msg.attachments[0].fields.push({
+                  title: `深さ`,
+                  value: `${depth(Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._)}`,
+                  short: true
+                });
                 msg.attachments[0].fields.push({
                   title: `その他`,
                   value: `${Report.Body[0].Comments[0].ForecastComment[0].Text[0]}`,
@@ -125,16 +149,9 @@ module.exports = (robot) => {
                     }
                   ]
                 }];
-                let depth = '';
-                let point = Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._.match(iso6709);
-                if (point === null) {
-                  depth = '不明';
-                } else {
-                  depth = `${Math.floor(Number(point[1]) / 1000)}km`;
-                }
                 msg.attachments[0].fields.push({
                   title: `深さ`,
-                  value: `${depth}`,
+                  value: `${depth(Report.Body[0].Earthquake[0].Hypocenter[0].Area[0]['jmx_eb:Coordinate'][0]._)}`,
                   short: true
                 });
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
@@ -146,14 +163,14 @@ module.exports = (robot) => {
                 } else {
                   msg.attachments[0].fields.push({
                     title: `マグニチュード`,
-                    value: `${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._}`,
+                    value: `${toFullWith(Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._)}`,
                     short: true
                   });
                 }
                 if (Report.Body[0].Intensity) {
                   msg.attachments[0].fields.push({
                     title: `最大震度`,
-                    value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
+                    value: `${toFullWith(Report.Body[0].Intensity[0].Observation[0].MaxInt[0])}`,
                     short: true
                   });
                 } else {
