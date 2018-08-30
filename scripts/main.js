@@ -10,6 +10,7 @@ let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'})
 
 const iso6709 = /[\+\-].*[\+\-].*[\+\-](.*)\//;
 
+// 半角英数文字を全角文字に変換する
 const toFullWith = (input) => {
   input = String(input);
   return input.replace(/[ -~]/g, (c) => {
@@ -17,6 +18,7 @@ const toFullWith = (input) => {
   });
 };
 
+// ISO6709形式の座標データから深さを読み取り整形して返す
 const depth = (input) => {
   let match = input.match(iso6709);
   let d;
@@ -37,10 +39,12 @@ const depth = (input) => {
 module.exports = (robot) => {
   robot.router.use(bodyparser.text({type: '*/*'}));
 
+  // 呼ばれたら説明を返す
   robot.hear(/(!|！)(alertbot|災害情報)/, (msg) => {
     msg.send('私は気象庁から地震・火山などの情報を取得し、 #災害情報 チャンネルに投稿します');
   });
 
+  // Subscriber登録・登録解除
   robot.router.get('/sub', (req, res) => {
     const query = req.query;
     if (query['hub.mode'] !== 'subscribe' && query['hub.mode'] !== 'unsubscribe') {
@@ -57,6 +61,7 @@ module.exports = (robot) => {
     logger.info(JSON.stringify(query));
   });
 
+  // Atomフィードをパースして投稿する
   robot.router.post('/sub', (req, res) => {
     let feeds = [];
     let stream = new readable;
@@ -76,12 +81,16 @@ module.exports = (robot) => {
           logger.info('"http://xml.kishou.go.jp/"で始まらない情報リンク、スキップしました');
           return;
         }
+        // フィード内のURLを順にリクエストする
         request.get(feed.link, (feedErr, feedRes, feedBody) => {
           if (feedErr) {
-            logger.error(feedErr.message);
+            logger.error(feedErr);
             return;
           }
           xml2js.parseString(feedBody, (parseErr, parseResult) => {
+            if (parseErr) {
+              logger.error(parseErr);
+            }
             let Report = parseResult.Report;
             if (Report.Control[0].Status[0] !== '通常') {
               logger.info('通常では無い情報（訓練など）、スキップしました');
@@ -89,7 +98,8 @@ module.exports = (robot) => {
             }
             let msg = new Object;
             let timestamp = Math.floor(new Date(Report.Head[0].ReportDateTime[0]).getTime() / 1000);
-            switch (Report.Head[0].InfoKind[0]) {  // 運用種別情報
+            // 運用種別情報に応じてパースする
+            switch (Report.Head[0].InfoKind[0]) {
               case '震度速報':
                 let maxInt = Report.Body[0].Intensity[0].Observation[0].MaxInt[0];
                 msg.attachments = [{
@@ -250,10 +260,10 @@ module.exports = (robot) => {
                   text: `${Report.Head[0].Headline[0].Text[0]}`
                 }];
             }
-            msg.attachments[0].color = `#FF4B00`;
-            msg.attachments[0].footer = `${Report.Head[0].InfoType[0]}`;
-            msg.attachments[0].ts = `${timestamp}`;
-            robot.send({room: '災害情報'}, msg);
+            msg.attachments[0].color = `#FF4B00`;                         // JIS安全色 赤
+            msg.attachments[0].footer = `${Report.Head[0].InfoType[0]}`;  // 発表・訂正・取消
+            msg.attachments[0].ts = `${timestamp}`;                       // 情報のUNIX時間
+            robot.send({room: '災害情報'}, msg);                          // 災害情報チャンネルに投稿
           });
         });
       });
