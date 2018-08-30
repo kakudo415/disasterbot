@@ -255,7 +255,7 @@ module.exports = (robot) => {
                 return;  // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
 
               default:
-                msg.attachments[{
+                msg.attachments = [{
                   author_name: `${Report.Head[0].Title[0]}`,
                   text: `${Report.Head[0].Headline[0].Text[0]}`
                 }];
