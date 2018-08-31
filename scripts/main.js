@@ -256,7 +256,6 @@ module.exports = (robot) => {
             }
 
             msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`;  // タイトルとして利用
-            msg.attachments[0].author_link = `${feed.link}`;                // Feed XMLのリンク
             msg.attachments[0].color = `#FF4B00`;                           // JIS安全色 赤
             msg.attachments[0].footer = `${Report.Head[0].InfoType[0]}`;    // 発表・訂正・取消
             msg.attachments[0].ts = `${timestamp}`;                         // 情報のUNIX時間
