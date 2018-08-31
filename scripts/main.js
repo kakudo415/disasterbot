@@ -36,6 +36,105 @@ const depth = (input) => {
   }
 };
 
+// 震度を降順のfieldの配列にする
+const intList = (obs) => {
+  let int = obs.MaxInt[0];
+  let fields = new Array;
+  while (true) {
+    const list = () => {
+      obs.Pref.forEach((pref) => {
+        if (pref.MaxInt[0] == int) {
+          fields[fields.length - 1].value += `${pref.Name[0]} `;
+        }
+      });
+    };
+    switch (int) {
+      case '7':
+        fields.push({
+          title: '震度７',
+          value: '',
+          short: false
+        });
+        list();
+        int = '6+';
+        break;
+      case '6+':
+        fields.push({
+          title: '震度６強',
+          value: '',
+          short: false
+        });
+        list();
+        int = '6-';
+        break;
+      case '6-':
+        fields.push({
+          title: '震度６弱',
+          value: '',
+          short: false
+        });
+        list();
+        int = '5+';
+        break;
+      case '5+':
+        fields.push({
+          title: '震度５強',
+          value: '',
+          short: false
+        });
+        list();
+        int = '5-';
+        break;
+      case '5-':
+        fields.push({
+          title: '震度５弱',
+          value: '',
+          short: false
+        });
+        list();
+        int = '4';
+        break;
+      case '4':
+        fields.push({
+          title: '震度４',
+          value: '',
+          short: false
+        });
+        list();
+        int = '3';
+        break;
+      case '3':
+        fields.push({
+          title: '震度３',
+          value: '',
+          short: false
+        });
+        list();
+        int = '2';
+        break;
+      case '2':
+        fields.push({
+          title: '震度２',
+          value: '',
+          short: false
+        });
+        list();
+        int = '1';
+        break;
+      case '1':
+        fields.push({
+          title: '震度１',
+          value: '',
+          short: false
+        });
+        list();
+        return fields;
+      default:
+        return fields;
+    }
+  }
+};
+
 module.exports = (robot) => {
   robot.router.use(bodyparser.text({type: '*/*'}));
 
@@ -101,7 +200,6 @@ module.exports = (robot) => {
             // 運用種別情報に応じてパースする
             switch (Report.Head[0].InfoKind[0]) {
               case '震度速報':
-                let maxInt = Report.Body[0].Intensity[0].Observation[0].MaxInt[0];
                 msg.attachments = [{
                   fields: [
                     {
@@ -111,16 +209,8 @@ module.exports = (robot) => {
                     }
                   ]
                 }];
-                let maxIntArea = '';
-                Report.Body[0].Intensity[0].Observation[0].Pref.forEach((pref) => {
-                  if (pref.MaxInt[0] == maxInt) {
-                    maxIntArea += `${pref.Name[0]} `;
-                  }
-                });
-                msg.attachments[0].fields.push({
-                  title: `最大震度を観測した地域`,
-                  value: `${maxIntArea}`,
-                  short: false
+                intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
+                  msg.attachments[0].fields.push(field);
                 });
                 break;
 
@@ -177,12 +267,15 @@ module.exports = (robot) => {
                 if (Report.Body[0].Intensity) {
                   msg.attachments[0].fields.push({
                     title: `最大震度`,
-                    value: `${toFullWith(Report.Body[0].Intensity[0].Observation[0].MaxInt[0])}`,
+                    value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
                     short: true
+                  })
+                  intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
+                    msg.attachments[0].fields.push(field);
                   });
                 } else {
                   msg.attachments[0].fields.push({
-                    title: `最大震度`,
+                    title: `震度`,
                     value: `不明`,
                     short: true
                   });
