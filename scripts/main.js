@@ -103,7 +103,6 @@ module.exports = (robot) => {
               case '震度速報':
                 let maxInt = Report.Body[0].Intensity[0].Observation[0].MaxInt[0];
                 msg.attachments = [{
-                  author_name: `${Report.Head[0].Title[0]}`,
                   fields: [
                     {
                       title: `最大震度`,
@@ -127,7 +126,6 @@ module.exports = (robot) => {
 
               case '震源速報':
                 msg.attachments = [{
-                  author_name: `${Report.Head[0].Title[0]}`,
                   fields: [
                     {
                       title: `震央地`,
@@ -150,7 +148,6 @@ module.exports = (robot) => {
 
               case '地震情報':
                 msg.attachments = [{
-                  author_name: `${Report.Head[0].Title[0]}`,
                   fields: [
                     {
                       title: `震央地`,
@@ -209,7 +206,6 @@ module.exports = (robot) => {
                   areas += `${area.Name[0]} `;
                 });
                 msg.attachments = [{
-                  author_name: `${Report.Head[0].Title[0]}`,
                   fields: [
                     {
                       title: `火山名`,
@@ -222,7 +218,6 @@ module.exports = (robot) => {
 
               case '噴火に関する火山観測報':
                 msg.attachments = [{
-                  author_name: `${Report.Head[0].InfoKind[0]}`,
                   fields: [
                     {
                       title: `場所`,
@@ -256,14 +251,16 @@ module.exports = (robot) => {
 
               default:
                 msg.attachments = [{
-                  author_name: `${Report.Head[0].Title[0]}`,
                   text: `${Report.Head[0].Headline[0].Text[0]}`
                 }];
             }
-            msg.attachments[0].color = `#FF4B00`;                         // JIS安全色 赤
-            msg.attachments[0].footer = `${Report.Head[0].InfoType[0]}`;  // 発表・訂正・取消
-            msg.attachments[0].ts = `${timestamp}`;                       // 情報のUNIX時間
-            robot.send({room: '災害情報'}, msg);                          // 災害情報チャンネルに投稿
+
+            msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`;  // タイトルとして利用
+            msg.attachments[0].author_link = `${feed.link}`;                // Feed XMLのリンク
+            msg.attachments[0].color = `#FF4B00`;                           // JIS安全色 赤
+            msg.attachments[0].footer = `${Report.Head[0].InfoType[0]}`;    // 発表・訂正・取消
+            msg.attachments[0].ts = `${timestamp}`;                         // 情報のUNIX時間
+            robot.send({room: '災害情報'}, msg);                            // 災害情報チャンネルに投稿
           });
         });
       });
