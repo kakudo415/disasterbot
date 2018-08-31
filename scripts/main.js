@@ -347,11 +347,11 @@ module.exports = (robot) => {
                 }];
             }
 
-            msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`;  // タイトルとして利用
-            msg.attachments[0].color = `#FF4B00`;                           // JIS安全色 赤
-            msg.attachments[0].footer = `${Report.Head[0].InfoType[0]}`;    // 発表・訂正・取消
-            msg.attachments[0].ts = `${timestamp}`;                         // 情報のUNIX時間
-            robot.send({room: '災害情報'}, msg);                            // 災害情報チャンネルに投稿
+            msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`;                                         // タイトルとして利用
+            msg.attachments[0].color = `#FF4B00`;                                                                  // JIS安全色 赤
+            msg.attachments[0].footer = `${Report.Control[0].PublishingOffice[0]} ${Report.Head[0].InfoType[0]}`;  // 発表元 発表・訂正・取消
+            msg.attachments[0].ts = `${timestamp}`;                                                                // 情報のUNIX時間
+            robot.send({room: '災害情報'}, msg);                                                                   // 災害情報チャンネルに投稿
           });
         });
       });
