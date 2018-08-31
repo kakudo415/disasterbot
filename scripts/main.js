@@ -1,14 +1,14 @@
 'use strict';
-let Fs = require('fs');
-let Log = require('log');
+let fs = require('fs');
+let log = require('log');
 let request = require('request');
-let FeedParser = require('feedparser');
+let feedParser = require('feedparser');
 let xml2js = require('xml2js');
 let bodyparser = require('body-parser');
 let readable = require('stream').Readable;
-let logger = new Log('debug', Fs.createWriteStream('./access_log', {flags: 'a'}));
+let logger = new log('debug', fs.createWriteStream('./access_log', {flags: 'a'}));
 
-const iso6709 = /[\+\-].*[\+\-].*[\+\-](.*)\//;
+const ISO6709 = /[\+\-].*[\+\-].*[\+\-](.*)\//;
 
 // 半角英数文字を全角文字に変換する
 const toFullWith = (input) => {
@@ -20,12 +20,11 @@ const toFullWith = (input) => {
 
 // ISO6709形式の座標データから深さを読み取り整形して返す
 const depth = (input) => {
-  let match = input.match(iso6709);
-  let d;
+  let match = input.match(ISO6709);
   if (match === null) {
     return '不明';
   } else {
-    d = Math.floor(Number(match[1]) / 1000);
+    let d = Math.floor(Number(match[1]) / 1000);
     if (d === 0) {
       return 'ごく浅い';
     } else if (d > 600) {
@@ -164,7 +163,7 @@ module.exports = (robot) => {
   robot.router.post('/sub', (req, res) => {
     let feeds = [];
     let stream = new readable;
-    let feedparser = new FeedParser({});
+    let feedparser = new feedParser({});
     stream.push(req.body);
     stream.push(null);
     stream.pipe(feedparser);
