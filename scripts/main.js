@@ -266,7 +266,7 @@ module.exports = (robot) => {
                 if (Report.Body[0].Intensity) {
                   msg.attachments[0].fields.push({
                     title: `最大震度`,
-                    value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
+                    value: `${toFullWith(Report.Body[0].Intensity[0].Observation[0].MaxInt[0])}`,
                     short: true
                   })
                   intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
