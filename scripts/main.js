@@ -42,11 +42,9 @@ const intList = (obs) => {
   while (true) {
     const list = () => {
       obs.Pref.forEach((pref) => {
-        pref.Area.forEach((area) => {
-          if (area.MaxInt[0] == int) {
-            fields[fields.length - 1].value += `${area.Name[0]} `;
-          }
-        });
+        if (pref.MaxInt[0] == int) {
+          fields[fields.length - 1].value += `${pref.Name[0]} `;
+        }
       });
     };
     switch (int) {
