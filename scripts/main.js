@@ -46,6 +46,9 @@ const intList = (obs) => {
           fields[fields.length - 1].value += `${pref.Name[0]} `;
         }
       });
+      if (fields[fields.length - 1].value.length === 0) {
+        fields.pop();
+      }
     };
     switch (int) {
       case '7':
@@ -200,13 +203,7 @@ module.exports = (robot) => {
             switch (Report.Head[0].InfoKind[0]) {
               case '震度速報':
                 msg.attachments = [{
-                  fields: [
-                    {
-                      title: `最大震度`,
-                      value: `${toFullWith(maxInt)}`,
-                      short: true
-                    }
-                  ]
+                  fields: [{}]
                 }];
                 intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
                   msg.attachments[0].fields.push(field);
