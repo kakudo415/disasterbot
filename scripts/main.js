@@ -205,6 +205,10 @@ module.exports = (robot) => {
                 msg.attachments = [{
                   fields: [{}]
                 }];
+                let mi = `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`;
+                if (mi === '3' || mi === '5-' || mi === '5+' || mi === '6-' || mi === '6+' || mi === '7') {
+                  msg.attachments[0].text = '@here（最大震度４以上なのでメンションしました）';
+                }
                 intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
                   msg.attachments[0].fields.push(field);
                 });
