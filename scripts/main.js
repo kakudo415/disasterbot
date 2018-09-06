@@ -46,11 +46,11 @@ const intList = (obs) => {
         areas = '';
         pref.Area.forEach((area) => {
           if (area.MaxInt[0] == int) {
-            areas += `${area.Name[0]} `;
+            areas += `${area.Name[0]}　`;
           }
         });
         if (areas.length > 0) {
-          fields[fields.length - 1].value += `>*${pref.Name[0]}* ${areas}\n`;
+          fields[fields.length - 1].value += `>*${pref.Name[0]}*　${areas}\n`;
         }
       });
       if (fields[fields.length - 1].value.length === 0) {
