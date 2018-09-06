@@ -41,9 +41,16 @@ const intList = (obs) => {
   let fields = new Array;
   while (true) {
     const list = () => {
+      let areas;
       obs.Pref.forEach((pref) => {
-        if (pref.MaxInt[0] == int) {
-          fields[fields.length - 1].value += `${pref.Name[0]} `;
+        areas = '';
+        pref.Area.forEach((area) => {
+          if (area.MaxInt[0] == int) {
+            areas += `${area.Name[0]} `;
+          }
+        });
+        if (areas.length > 0) {
+          fields[fields.length - 1].value += `>*${pref.Name[0]}* ${areas}\n`;
         }
       });
       if (fields[fields.length - 1].value.length === 0) {
@@ -207,7 +214,7 @@ module.exports = (robot) => {
                 }];
                 let mi = `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`;
                 if (mi === '4' || mi === '5-' || mi === '5+' || mi === '6-' || mi === '6+' || mi === '7') {
-                  msg.attachments[0].text = '@here（最大震度４以上なのでメンションしました）';
+                  msg.attachments[0].text = '@here（最大震度４以上）';
                 }
                 intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
                   msg.attachments[0].fields.push(field);
@@ -347,7 +354,7 @@ module.exports = (robot) => {
                   text: `${Report.Head[0].Headline[0].Text[0]}`
                 }];
             }
-
+            // msg.attachments[0].mrkdwn_in = ['fields'];
             msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`;                                          // タイトルとして利用
             msg.attachments[0].color = `#FF4B00`;                                                                   // JIS安全色 赤
             msg.attachments[0].footer = `${Report.Control[0].PublishingOffice[0]}　${Report.Head[0].InfoType[0]}`;  // 発表元 発表・訂正・取消
