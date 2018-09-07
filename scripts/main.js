@@ -306,6 +306,7 @@ module.exports = (robot) => {
                   areas += `${area.Name[0]} `;
                 });
                 msg.attachments = [{
+                  text: '@here（噴火）',
                   fields: [
                     {
                       title: `火山名`,
