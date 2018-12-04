@@ -6,17 +6,11 @@ let feedParser = require('feedparser');
 let xml2js = require('xml2js');
 let bodyparser = require('body-parser');
 let readable = require('stream').Readable;
-let logger = new log('debug', fs.createWriteStream('./access_log', {flags: 'a'}));
+let logger = new log('debug', fs.createWriteStream('./access_log', {
+  flags: 'a'
+}));
 
 const ISO6709 = /[\+\-].*[\+\-].*[\+\-](.*)\//;
-
-// 半角英数文字を全角文字に変換する
-const toFullWith = (input) => {
-  input = String(input);
-  return input.replace(/[ -~]/g, (c) => {
-    return String.fromCharCode(c.charCodeAt(0) + 0xFEE0);
-  });
-};
 
 // ISO6709形式の座標データから深さを読み取り整形して返す
 const depth = (input) => {
@@ -28,9 +22,9 @@ const depth = (input) => {
     if (d === 0) {
       return 'ごく浅い';
     } else if (d > 600) {
-      return '６００キロ以上';
+      return '600km以上';
     } else {
-      return toFullWith(d) + 'キロ';
+      return d + 'km';
     }
   }
 };
@@ -46,11 +40,11 @@ const intList = (obs) => {
         areas = '';
         pref.Area.forEach((area) => {
           if (area.MaxInt[0] == int) {
-            areas += `　${area.Name[0]}`;
+            areas += `${area.Name[0]}　`;
           }
         });
         if (areas.length > 0) {
-          fields[fields.length - 1].value += `>*${pref.Name[0]}*${areas}\n`;
+          fields[fields.length - 1].value += `【${pref.Name[0]}】${areas}\n`;
         }
       });
       if (fields[fields.length - 1].value.length === 0) {
@@ -60,7 +54,7 @@ const intList = (obs) => {
     switch (int) {
       case '7':
         fields.push({
-          title: '震度７',
+          title: '震度 7',
           value: '',
           short: false
         });
@@ -69,7 +63,7 @@ const intList = (obs) => {
         break;
       case '6+':
         fields.push({
-          title: '震度６強',
+          title: '震度 6強',
           value: '',
           short: false
         });
@@ -78,7 +72,7 @@ const intList = (obs) => {
         break;
       case '6-':
         fields.push({
-          title: '震度６弱',
+          title: '震度 6弱',
           value: '',
           short: false
         });
@@ -87,7 +81,7 @@ const intList = (obs) => {
         break;
       case '5+':
         fields.push({
-          title: '震度５強',
+          title: '震度 5強',
           value: '',
           short: false
         });
@@ -96,7 +90,7 @@ const intList = (obs) => {
         break;
       case '5-':
         fields.push({
-          title: '震度５弱',
+          title: '震度 5弱',
           value: '',
           short: false
         });
@@ -105,7 +99,7 @@ const intList = (obs) => {
         break;
       case '4':
         fields.push({
-          title: '震度４',
+          title: '震度 4',
           value: '',
           short: false
         });
@@ -114,7 +108,7 @@ const intList = (obs) => {
         break;
       case '3':
         fields.push({
-          title: '震度３',
+          title: '震度 3',
           value: '',
           short: false
         });
@@ -123,7 +117,7 @@ const intList = (obs) => {
         break;
       case '2':
         fields.push({
-          title: '震度２',
+          title: '震度 2',
           value: '',
           short: false
         });
@@ -132,7 +126,7 @@ const intList = (obs) => {
         break;
       case '1':
         fields.push({
-          title: '震度１',
+          title: '震度 1',
           value: '',
           short: false
         });
@@ -145,7 +139,9 @@ const intList = (obs) => {
 };
 
 module.exports = (robot) => {
-  robot.router.use(bodyparser.text({type: '*/*'}));
+  robot.router.use(bodyparser.text({
+    type: '*/*'
+  }));
 
   // 呼ばれたら説明を返す
   robot.hear(/(!|！)(alertbot|災害情報)/, (msg) => {
@@ -201,7 +197,7 @@ module.exports = (robot) => {
             }
             let Report = parseResult.Report;
             if (Report.Control[0].Status[0] !== '通常') {
-              logger.info('通常では無い情報（訓練など）、スキップしました');
+              logger.info('通常では無い情報 (訓練など) 、スキップしました');
               return;
             }
             let msg = new Object;
@@ -214,7 +210,7 @@ module.exports = (robot) => {
                 }];
                 let mi = `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`;
                 if (mi === '4' || mi === '5-' || mi === '5+' || mi === '6-' || mi === '6+' || mi === '7') {
-                  msg.attachments[0].text = '@here（最大震度４以上）';
+                  msg.attachments[0].text = '@here (最大震度４以上)';
                 }
                 intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
                   msg.attachments[0].fields.push(field);
@@ -223,13 +219,11 @@ module.exports = (robot) => {
 
               case '震源速報':
                 msg.attachments = [{
-                  fields: [
-                    {
-                      title: `震央地`,
-                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
-                      short: true
-                    }
-                  ]
+                  fields: [{
+                    title: `震央地`,
+                    value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
+                    short: true
+                  }]
                 }];
                 msg.attachments[0].fields.push({
                   title: `深さ`,
@@ -245,13 +239,11 @@ module.exports = (robot) => {
 
               case '地震情報':
                 msg.attachments = [{
-                  fields: [
-                    {
-                      title: `震央地`,
-                      value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
-                      short: true
-                    }
-                  ]
+                  fields: [{
+                    title: `震央地`,
+                    value: `${Report.Body[0].Earthquake[0].Hypocenter[0].Area[0].Name[0]}`,
+                    short: true
+                  }]
                 }];
                 msg.attachments[0].fields.push({
                   title: `深さ`,
@@ -260,21 +252,21 @@ module.exports = (robot) => {
                 });
                 if (Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.condition === '不明') {
                   msg.attachments[0].fields.push({
-                    title: `マグニチュード`,
-                    value: `${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}`,
+                    title: `規模`,
+                    value: `M${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0].$.description}`,
                     short: true
                   });
                 } else {
                   msg.attachments[0].fields.push({
-                    title: `マグニチュード`,
-                    value: `${toFullWith(Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._)}`,
+                    title: `規模`,
+                    value: `M${Report.Body[0].Earthquake[0]['jmx_eb:Magnitude'][0]._}`,
                     short: true
                   });
                 }
                 if (Report.Body[0].Intensity) {
                   msg.attachments[0].fields.push({
                     title: `最大震度`,
-                    value: `${toFullWith(Report.Body[0].Intensity[0].Observation[0].MaxInt[0])}`,
+                    value: `${Report.Body[0].Intensity[0].Observation[0].MaxInt[0]}`,
                     short: true
                   })
                   intList(Report.Body[0].Intensity[0].Observation[0]).forEach((field) => {
@@ -306,21 +298,18 @@ module.exports = (robot) => {
                   areas += `${area.Name[0]} `;
                 });
                 msg.attachments = [{
-                  text: '@here（噴火）',
-                  fields: [
-                    {
-                      title: `火山名`,
-                      value: areas,
-                      short: false
-                    }
-                  ]
+                  text: '@here (噴火)',
+                  fields: [{
+                    title: `火山名`,
+                    value: areas,
+                    short: false
+                  }]
                 }];
                 break;
 
               case '噴火に関する火山観測報':
                 msg.attachments = [{
-                  fields: [
-                    {
+                  fields: [{
                       title: `場所`,
                       value: `${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].Name[0]} ${Report.Body[0].VolcanoInfo[0].Item[0].Areas[0].Area[0].CraterName[0]}`,
                       short: true
@@ -338,17 +327,17 @@ module.exports = (robot) => {
                 //   break;
 
               case '地震の活動状況等に関する情報':
-                return;  // 地震の活動状況等に関する情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return; // 地震の活動状況等に関する情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '震源要素更新のお知らせ':
-                return;  // 震源要素更新のお知らせはこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return; // 震源要素更新のお知らせはこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '地震回数情報':
-                return;  // 地震回数情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return; // 地震回数情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '降灰予報':
-                return;  // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return; // 降灰予報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '東海地震関連情報':
-                return;  // 東海地震関連情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return; // 東海地震関連情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
               case '火山の状況に関する解説情報':
-                return;  // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
+                return; // 火山の状況に関する解説情報はこのBOTの主旨から外れるので、とりあえずは投稿しない（要望次第）
 
               default:
                 msg.attachments = [{
@@ -356,11 +345,13 @@ module.exports = (robot) => {
                 }];
             }
             // msg.attachments[0].mrkdwn_in = ['fields'];
-            msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`;                                          // タイトルとして利用
-            msg.attachments[0].color = `#FF4B00`;                                                                   // JIS安全色 赤
-            msg.attachments[0].footer = `${Report.Control[0].PublishingOffice[0]}　${Report.Head[0].InfoType[0]}`;  // 発表元 発表・訂正・取消
-            msg.attachments[0].ts = `${timestamp}`;                                                                 // 情報のUNIX時間
-            robot.send({room: '災害情報'}, msg);                                                                    // 災害情報チャンネルに投稿
+            msg.attachments[0].author_name = `${Report.Head[0].Title[0]}`; // タイトルとして利用
+            msg.attachments[0].color = `#FF4B00`; // JIS安全色 赤
+            msg.attachments[0].footer = `${Report.Control[0].PublishingOffice[0]}　${Report.Head[0].InfoType[0]}`; // 発表元 発表・訂正・取消
+            msg.attachments[0].ts = `${timestamp}`; // 情報のUNIX時間
+            robot.send({
+              room: '災害情報'
+            }, msg); // 災害情報チャンネルに投稿
           });
         });
       });
