@@ -3,28 +3,33 @@ const request = require('request');
 
 const alreadyRead = new Array;
 
+// JSONを探索して指定されたパス(可変長引数)の値を配列(同名のパスが複数存在可)で返す
 const trace = (obj, ...name) => {
-  const values = [];
-  const target = String(name.shift());
+  let values = [];
+  const target = name.shift();
   if (obj.children) {
     for (let i = 0; i < obj.children.length; i++) {
       if (obj.children[i].name === target) {
         if (name.length >= 1) {
-          values.push(trace(obj.children[i], name));
+          values = values.concat(trace(obj.children[i], ...name));
         }
-        return obj.children[i].value;
+        if (obj.children[i].value.length > 0) {
+          values = values.concat(obj.children[i].value);
+        }
       }
     }
   }
   return values;
 };
 
-const assembleMessage = (info) => {
+// Slack attachment形式のメッセージを組み立てる
+const asmMsg = (info) => {
   const attachments = [];
   switch (trace(info, 'Head', 'InfoKind')) {
     default:
+      const headline = trace(info, 'Head', 'Headline', 'Text')[0];
       attachments.push({
-        text: `${trace(info, 'Head', 'InfoKind')}は未対応です`,
+        text: `${headline?headline:trace(info, 'Head', 'InfoKind')}`,
         color: '#2196F3'
       });
   }
@@ -48,10 +53,9 @@ module.exports = (bot) => {
           } else {
             alreadyRead.push(key);
           }
-          console.log(assembleMessage(json.body[key]));
           bot.send({
             room: '開発'
-          }, assembleMessage(json.body[key]));
+          }, asmMsg(json.body[key]));
         }
       } catch (err) {
         console.error(err);
