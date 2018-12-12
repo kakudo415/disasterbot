@@ -4,22 +4,33 @@ const request = require('request');
 const alreadyRead = new Array;
 
 const trace = (obj, ...name) => {
+  const values = [];
   const target = String(name.shift());
   if (obj.children) {
     for (let i = 0; i < obj.children.length; i++) {
       if (obj.children[i].name === target) {
         if (name.length >= 1) {
-          return trace(obj.children[i], name);
+          values.push(trace(obj.children[i], name));
         }
         return obj.children[i].value;
       }
     }
   }
-  return null;
+  return values;
 };
 
 const assembleMessage = (info) => {
-  return trace(info, 'Control', 'Title');
+  const attachments = [];
+  switch (trace(info, 'Head', 'InfoKind')) {
+    default:
+      attachments.push({
+        text: `${trace(info, 'Head', 'InfoKind')}は未対応です`,
+        color: '#2196F3'
+      });
+  }
+  return {
+    attachments
+  };
 };
 
 module.exports = (bot) => {
@@ -37,6 +48,7 @@ module.exports = (bot) => {
           } else {
             alreadyRead.push(key);
           }
+          console.log(assembleMessage(json.body[key]));
           bot.send({
             room: '開発'
           }, assembleMessage(json.body[key]));
