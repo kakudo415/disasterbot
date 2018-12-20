@@ -1,65 +1,56 @@
 'use strict';
 const request = require('request');
 
-const alreadyRead = new Array;
-
-// JSONを探索して指定されたパス(可変長引数)の値を配列(同名のパスが複数存在可)で返す
-const trace = (obj, ...name) => {
-  let values = [];
-  const target = name.shift();
-  if (obj.children) {
-    for (let i = 0; i < obj.children.length; i++) {
-      if (obj.children[i].name === target) {
-        if (name.length >= 1) {
-          values = values.concat(trace(obj.children[i], ...name));
-        }
-        if (obj.children[i].value.length > 0) {
-          values = values.concat(obj.children[i].value);
-        }
-      }
-    }
-  }
-  return values;
-};
-
-// Slack attachment形式のメッセージを組み立てる
-const asmMsg = (info) => {
-  const attachments = [];
-  switch (trace(info, 'Head', 'InfoKind')) {
-    default:
-      const headline = trace(info, 'Head', 'Headline', 'Text')[0];
-      attachments.push({
-        text: `${headline?headline:trace(info, 'Head', 'InfoKind')}`,
-        color: '#2196F3'
-      });
-  }
-  return {
-    attachments
-  };
-};
+const alreadyRead = [];
 
 module.exports = (bot) => {
-  // Polling Kishow API
   setInterval(() => {
-    request.get('https://kakudo.app/kishow/3min.json', (err, res, body) => {
-      try {
-        if (err || res.statusCode !== 200) {
-          return;
-        }
-        const json = JSON.parse(body);
-        for (let key in json.body) {
-          if (alreadyRead.includes(key)) {
-            continue;
-          } else {
-            alreadyRead.push(key);
-          }
-          bot.send({
-            room: '開発'
-          }, asmMsg(json.body[key]));
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    });
+    request.get("https://kakudo.app/kishow/", poll);
   }, 1000);
+
+  const poll = (err, res, body) => {
+    if (err || res.statusCode !== 200) {
+      return;
+    }
+    try {
+      const data = JSON.parse(body);
+      for (let uuid of data.UUID) {
+        if (!alreadyRead.includes(uuid)) {
+          request.get(`https://kakudo.app/kishow/${uuid}`, info);
+          alreadyRead.push(uuid);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+  };
+
+  const info = (err, res, body) => {
+    if (err || res.statusCode !== 200) {
+      return;
+    }
+    try {
+      const data = JSON.parse(body);
+      bot.send({ room: "開発" }, asmMsg(data.Report));
+    } catch (e) {
+      console.error(e);
+      return;
+    }
+  };
+
+  const asmMsg = (info) => {
+    const attachments = [];
+    switch (info.Head.InfoKind) {
+      default:
+        const headline = info.Head.Headline.Text;
+        attachments.push({
+          text: `${headline ? headline : info.Head.InfoKind}`,
+          color: '#2196F3'
+        });
+    }
+    return {
+      attachments
+    };
+  };
 };
