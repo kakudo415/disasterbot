@@ -19,3 +19,7 @@ exports.Volcano = (attachments, report) => {
   attachments.text = report.Head.Headline.Text;
   return attachments;
 };
+exports.Other = (attachments, report) => {
+  attachments.text = report.Head.Headline.Text ? report.Head.Headline.Text : report.Head.InfoKind;
+  return attachments;
+};

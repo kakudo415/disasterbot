@@ -18,7 +18,7 @@ module.exports = (bot) => {
           continue;
         }
         request.get(`https://kakudo.app/kishow/${uuid}`, info);
-        bot.brain.set(`ALERTBOT:${uuid}`, "もうみた");
+        bot.brain.set(`ALERTBOT:${uuid}`, "MOUMITA");
       }
     } catch (e) {
       console.error(e);
@@ -28,6 +28,7 @@ module.exports = (bot) => {
 
   const info = (err, res, body) => {
     if (err || res.statusCode !== 200) {
+      console.error(e, res.statusCode);
       return;
     }
     try {
@@ -54,22 +55,23 @@ module.exports = (bot) => {
     }
     switch (report.Head.InfoKind) {
       case "震度速報":
-        attachments = message.MaxInt(report);
+        attachments = message.MaxInt(attachments, report);
         break;
       case "震源速報":
-        attachments = message.Hypocenter(report);
+        attachments = message.Hypocenter(attachments, report);
         break;
       case "地震情報":
-        attachments = message.Earthquake(report);
+        attachments = message.Earthquake(attachments, report);
         break;
       case "噴火速報":
-        attachments = message.Eruption(report);
+        attachments = message.Eruption(attachments, report);
         break;
       case "噴火に関する火山観測報":
-        attachments = message.Volcano(report);
+        attachments = message.Volcano(attachments, report);
         break;
       default:
-        return;
+        attachments = message.Other(attachments, report);
+        break;
     }
     return {
       attachments: [attachments]
