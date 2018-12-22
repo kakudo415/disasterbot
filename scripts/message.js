@@ -14,7 +14,7 @@ exports.Hypocenter = (attachments, report) => {
 
 // 地震情報
 exports.Earthquake = (attachments, report) => {
-  fields = [];
+  let fields = [];
   fields.push({
     title: "震央地",
     value: report.Body.Earthquake.Hypocenter.Area.Name,
@@ -37,7 +37,7 @@ exports.Eruption = (attachments, report) => {
 
 // 噴火に関する火山観測報
 exports.Volcano = (attachments, report) => {
-  fields = [];
+  let fields = [];
   fields.push({
     title: "場所",
     value: `${Report.Body.VolcanoInfo.Item.Areas.Area.Name} ${Report.Body.VolcanoInfo.Item.Areas.Area.CraterName}`,
