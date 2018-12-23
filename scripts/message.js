@@ -111,6 +111,14 @@ exports.Other = (attachments, Report) => {
   return attachments;
 };
 
+// 配列じゃないObjectを配列化
+const ToArray = (src) => {
+  if (Array.isArray(src)) {
+    return src;
+  }
+  return [src];
+};
+
 // ISO6709形式の位置情報をパースして km に変換
 const ISO6709 = (src) => {
   let result = src.match(/([\+\-][\w|\.]+)([\+\-][\w|\.]+)([\+\-][\w|\.]+)\//);
@@ -137,9 +145,9 @@ const intFields = (obs) => {
   let int = obs.MaxInt;
   // 最後に作ったfieldの該当地域
   const list = () => {
-    obs.Pref.forEach((pref) => {
+    ToArray(obs.Pref).forEach((pref) => {
       let areas = [];
-      pref.Area.forEach((area) => {
+      ToArray(pref.Area).forEach((area) => {
         areas.push(area.Name);
       });
       if (areas.length > 0) {
