@@ -78,7 +78,13 @@ exports.Earthquake = (attachments, Report) => {
 
 // 噴火速報
 exports.Eruption = (attachments, Report) => {
-  attachments.text = Report.Head.Headline.Text;
+  let fields = [];
+  attachments.text = "@here 噴火";
+  fields.push({
+    title: "火山名",
+    value: Report.Body.VolcanoInfo.Item.Areas.Area,
+    short: false
+  });
   return attachments;
 };
 
