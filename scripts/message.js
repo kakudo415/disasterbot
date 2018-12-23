@@ -6,6 +6,9 @@ exports.MaxInt = (attachments, Report) => {
   if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
     attachments.text = "@here 最大震度４以上";
   }
+  intFields(Report.Body.Intensity.Observation).forEach((field) => {
+    attachments.fields.push(field);
+  });
   return attachments;
 };
 
@@ -53,6 +56,9 @@ exports.Earthquake = (attachments, Report) => {
       title: "最大震度",
       value: Report.Body.Intensity.Observation.MaxInt,
       short: true
+    });
+    intFields(Report.Body.Intensity.Observation).forEach((field) => {
+      attachments.fields.push(field);
     });
   } else {
     fields.push({
@@ -118,4 +124,101 @@ const ISO6709 = (src) => {
     }
   }
   return result;
+};
+
+const intFields = (obs) => {
+  let fields = [];
+  let int = obs.MaxInt;
+  // 最後に作ったfieldの該当地域
+  const list = () => {
+    obs.Pref.forEach((pref) => {
+      let areas = [];
+      pref.Area.forEach((area) => {
+        areas.push(area.Name);
+      });
+      if (areas.length > 0) {
+        fields[fields.length - 1].value = `【${pref.Name}】${areas.join(" ")}\n`;
+      }
+    });
+    if (fields[fields.length - 1].value.length === 0) {
+      fields.pop();
+    }
+  };
+  while (true) {
+    switch (int) {
+      case "7":
+        fields.push({
+          title: "震度 7",
+          short: false
+        });
+        list();
+        int = "6+";
+        break;
+      case "6+":
+        fields.push({
+          title: "震度 6強",
+          short: false
+        });
+        list();
+        int = "6-";
+        break;
+      case "6-":
+        fields.push({
+          title: "震度 6弱",
+          short: false
+        });
+        list();
+        int = "5+";
+        break;
+      case "5+":
+        fields.push({
+          title: "震度 5強",
+          short: false
+        });
+        list();
+        int = "5-";
+        break;
+      case "5-":
+        fields.push({
+          title: "震度 5弱",
+          short: false
+        });
+        list();
+        int = "4";
+        break;
+      case "4":
+        fields.push({
+          title: "震度 4",
+          short: false
+        });
+        list();
+        int = "3";
+        break;
+      case "3":
+        fields.push({
+          title: "震度 3",
+          short: false
+        });
+        list();
+        int = "2";
+        break;
+      case "2":
+        fields.push({
+          title: "震度 2",
+          short: false
+        });
+        list();
+        int = "1";
+        break;
+      case "1":
+        fields.push({
+          title: "震度 1",
+          short: false
+        });
+        list();
+        return fields;
+      default:
+        return fields;
+    }
+  }
 };
