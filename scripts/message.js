@@ -2,7 +2,10 @@
 
 // 震度速報
 exports.MaxInt = (attachments, Report) => {
-  attachments.text = Report.Head.Headline.Text;
+  const mi = Report.Body.Intensity.Observation.MaxInt;
+  if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
+    attachments.text = "@here 最大震度４以上";
+  }
   return attachments;
 };
 
@@ -45,11 +48,19 @@ exports.Earthquake = (attachments, Report) => {
     value: "M" + Report.Body.Earthquake.Magnitude,
     short: true
   });
-  fields.push({
-    title: "最大震度",
-    value: Report.Body.Intensity.Observation.MaxInt,
-    short: true
-  });
+  if (Report.Body.Intensity) {
+    fields.push({
+      title: "最大震度",
+      value: Report.Body.Intensity.Observation.MaxInt,
+      short: true
+    });
+  } else {
+    fields.push({
+      title: "震度",
+      value: "不明",
+      short: true
+    });
+  }
   fields.push({
     title: "その他",
     value: Report.Body.Comments.ForecastCommment.Text,
