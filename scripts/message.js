@@ -15,6 +15,7 @@ exports.Hypocenter = (attachments, report) => {
 // 地震情報
 exports.Earthquake = (attachments, report) => {
   let fields = [];
+  console.log(typeof report.Body.Earthquake.Hypocenter.Area["jmx_eb:Coordinate"], report.Body.Earthquake.Hypocenter.Area["jmx_eb:Coordinate"]);
   fields.push({
     title: "震央地",
     value: report.Body.Earthquake.Hypocenter.Area.Name,
@@ -22,7 +23,7 @@ exports.Earthquake = (attachments, report) => {
   });
   fields.push({
     title: "深さ",
-    value: `${ISO6709(report.Body.Earthquake.Hypocenter.Area["jmx_eb:Coordinate"])[3].replace("-", "")}km`,
+    value: `${ISO6709(String(report.Body.Earthquake.Hypocenter.Area["jmx_eb:Coordinate"]))[3].replace("-", "")}km`,
     short: true
   });
   attachments.fields = fields;
