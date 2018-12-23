@@ -22,22 +22,22 @@ exports.Earthquake = (attachments, Report) => {
   });
   fields.push({
     title: "深さ",
-    value: ISO6709(Report.Body.Earthquake.Hypocenter.Area.Coordinate)[3].replace("-", "") + "km",
+    value: ISO6709(Report.Body.Earthquake.Hypocenter.Area.Coordinate)[3],
     short: true
   });
   fields.push({
     title: "規模",
-    value: Report.Body.Earthquake.Magnitude,
+    value: "M" + Report.Body.Earthquake.Magnitude,
     short: true
   });
   fields.push({
     title: "最大震度",
-    value: Report.Body.Intensity.MaxInt,
+    value: Report.Body.Intensity.Observation.MaxInt,
     short: true
   });
   fields.push({
     title: "その他",
-    value: Report.Body.Comments.ForecastCommment,
+    value: Report.Body.Comments.ForecastCommment.Text,
     short: false
   });
   attachments.fields = fields;
@@ -73,6 +73,23 @@ exports.Other = (attachments, Report) => {
   return attachments;
 };
 
+// ISO6709形式の位置情報をパースして km に変換
 const ISO6709 = (src) => {
-  return src.match(/([\+\-][\w|\.]+)([\+\-][\w|\.]+)([\+\-][\w|\.]+)\//);
+  let result = src.match(/([\+\-][\w|\.]+)([\+\-][\w|\.]+)([\+\-][\w|\.]+)\//);
+  if (result === null) {
+    return [null, "不明", "不明", "不明"];
+  }
+  for (let i = 1; i < result.length; i++) {
+    result[i] = Math.floor(Number(result[i].replace("-", "")) / 1000);
+    if (result[i] === undefined) {
+      result[i] = "不明";
+    } else if (0 === result[i]) {
+      result[i] = "ごく浅い";
+    } else if (600 <= result[i]) {
+      result[i] = "600km以上";
+    } else {
+      result[i] = result[i] + "km";
+    }
+  }
+  return result;
 };
