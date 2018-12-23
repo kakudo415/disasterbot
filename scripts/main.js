@@ -70,8 +70,8 @@ module.exports = (bot) => {
         attachments = message.Volcano(attachments, report);
         break;
       default:
-        attachments = message.Other(attachments, report);
-        break;
+        attachments = message.Other(attachments, report); // 投稿テスト用
+        return; // 基本は投稿しない
     }
     return {
       attachments: [attachments]
