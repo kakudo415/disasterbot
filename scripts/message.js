@@ -8,7 +8,22 @@ exports.MaxInt = (attachments, Report) => {
 
 // 震源速報
 exports.Hypocenter = (attachments, Report) => {
-  attachments.text = Report.Head.Headline.Text;
+  let fields = [];
+  fields.push({
+    title: "震央地",
+    value: Report.Body.Earthquake.Hypocenter.Area.Name,
+    short: true
+  });
+  fields.push({
+    title: "深さ",
+    value: ISO6709(Report.Body.Earthquake.Hypocenter.Area.Coordinate)[3],
+    short: true
+  });
+  fields.push({
+    title: "その他",
+    value: Report.Body.Comments.ForecastCommment.Text,
+    short: false
+  });
   return attachments;
 };
 
