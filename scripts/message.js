@@ -58,7 +58,7 @@ exports.Earthquake = (attachments, Report) => {
       short: true
     });
     intFields(Report.Body.Intensity.Observation).forEach((field) => {
-      attachments.fields.push(field);
+      fields.push(field);
     });
   } else {
     fields.push({
