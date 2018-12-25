@@ -151,7 +151,7 @@ const intFields = (obs) => {
         areas.push(area.Name);
       });
       if (areas.length > 0) {
-        fields[fields.length - 1].value = `【${pref.Name}】${areas.join(" ")}\n`;
+        fields[fields.length - 1].value += `【${pref.Name}】${areas.join(" ")}\n`;
       }
     });
     if (fields[fields.length - 1].value.length === 0) {
