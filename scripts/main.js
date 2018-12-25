@@ -3,6 +3,10 @@ const request = require("request");
 const message = require("./message.js");
 
 module.exports = (bot) => {
+  bot.respond("", (msg) => {
+    msg.send("こんにちは！私は気象庁から得た災害に関する情報を #災害情報 に投稿します");
+  });
+
   setInterval(() => {
     request.get("https://kakudo.app/kishow/", poll);
   }, 1000);
