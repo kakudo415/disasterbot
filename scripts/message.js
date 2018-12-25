@@ -163,6 +163,7 @@ const intFields = (obs) => {
       case "7":
         fields.push({
           title: "震度 7",
+          value: "",
           short: false
         });
         list();
@@ -171,6 +172,7 @@ const intFields = (obs) => {
       case "6+":
         fields.push({
           title: "震度 6強",
+          value: "",
           short: false
         });
         list();
@@ -179,6 +181,7 @@ const intFields = (obs) => {
       case "6-":
         fields.push({
           title: "震度 6弱",
+          value: "",
           short: false
         });
         list();
@@ -187,6 +190,7 @@ const intFields = (obs) => {
       case "5+":
         fields.push({
           title: "震度 5強",
+          value: "",
           short: false
         });
         list();
@@ -195,6 +199,7 @@ const intFields = (obs) => {
       case "5-":
         fields.push({
           title: "震度 5弱",
+          value: "",
           short: false
         });
         list();
@@ -203,6 +208,7 @@ const intFields = (obs) => {
       case "4":
         fields.push({
           title: "震度 4",
+          value: "",
           short: false
         });
         list();
@@ -211,6 +217,7 @@ const intFields = (obs) => {
       case "3":
         fields.push({
           title: "震度 3",
+          value: "",
           short: false
         });
         list();
@@ -219,6 +226,7 @@ const intFields = (obs) => {
       case "2":
         fields.push({
           title: "震度 2",
+          value: "",
           short: false
         });
         list();
@@ -227,6 +235,7 @@ const intFields = (obs) => {
       case "1":
         fields.push({
           title: "震度 1",
+          value: "",
           short: false
         });
         list();
