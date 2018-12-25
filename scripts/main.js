@@ -39,7 +39,7 @@ module.exports = (bot) => {
       const data = JSON.parse(body);
       const msg = asmMsg(data.Report);
       if (msg) {
-        bot.send({ room: "開発" }, msg);
+        bot.send({ room: "災害情報" }, msg);
       }
     } catch (e) {
       console.error(e);
