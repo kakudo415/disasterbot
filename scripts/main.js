@@ -36,8 +36,8 @@ module.exports = (bot) => {
               console.error(err);
             }
           });
-          // 3時間で「もう見たキャッシュ」を消す
-          redis.EXPIRE(`ALERTBOT:${uuid}`, 60 * 60 * 3, (err) => {
+          // 15分で「もう見たキャッシュ」を消す
+          redis.EXPIRE(`ALERTBOT:${uuid}`, 60 * 15, (err) => {
             if (err) {
               console.error(err);
             }
