@@ -148,7 +148,9 @@ const intFields = (obs) => {
     ToArray(obs.Pref).forEach((pref) => {
       let areas = [];
       ToArray(pref.Area).forEach((area) => {
-        areas.push(area.Name);
+        if (int === area.MaxInt) {
+          areas.push(area.Name);
+        }
       });
       if (areas.length > 0) {
         fields[fields.length - 1].value += `【${pref.Name}】${areas.join(" ")}\n`;
