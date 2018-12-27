@@ -1,4 +1,5 @@
 "use strict";
+const redis = require("redis").createClient();
 const request = require("request");
 const message = require("./message.js");
 
@@ -18,11 +19,30 @@ module.exports = (bot) => {
     try {
       const data = JSON.parse(body);
       for (let uuid of data.UUID) {
-        if (bot.brain.get(`ALERTBOT:${uuid}`)) {
-          continue;
-        }
-        request.get(`https://kakudo.app/kishow/${uuid}`, info);
-        bot.brain.set(`ALERTBOT:${uuid}`, "MOUMITA");
+        redis.GET(`ALERTBOT:${uuid}`, (err, rep) => {
+          if (err) {
+            console.error(err);
+            return;
+          }
+          // 「もう見たリスト」に登録していたらスキップ
+          if (rep !== null) {
+            return;
+          }
+          // UUIDのリンクから情報を取得して投稿
+          request.get(`https://kakudo.app/kishow/${uuid}`, info);
+          // 「もう見たリスト」に登録して重複して投稿しないように
+          redis.SET(`ALERTBOT:${uuid}`, "MOUMITA", (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+          // 3時間で「もう見たキャッシュ」を消す
+          redis.EXPIRE(`ALERTBOT:${uuid}`, 60 * 60 * 3, (err) => {
+            if (err) {
+              console.error(err);
+            }
+          });
+        });
       }
     } catch (e) {
       console.error(e);
