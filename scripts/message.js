@@ -35,6 +35,10 @@ exports.Hypocenter = (attachments, Report) => {
 
 // 地震情報
 exports.Earthquake = (attachments, Report) => {
+  const mi = Report.Body.Intensity.Observation.MaxInt;
+  if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
+    attachments.text = "@here 最大震度４以上";
+  }
   let fields = [];
   fields.push({
     title: "震央地",
