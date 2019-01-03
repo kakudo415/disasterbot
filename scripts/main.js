@@ -60,6 +60,12 @@ module.exports = (bot) => {
       const msg = asmMsg(data.Report);
       if (msg) {
         bot.send({ room: "災害情報" }, msg);
+        if (data.Report.Head.InfoKind === "震度速報" || data.Report.Head.InfoKind === "地震情報") {
+          const mi = data.Report.Body.Intensity.Observation.MaxInt;
+          if (mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
+            bot.send({ room: "zatsudan" }, msg);
+          }
+        }
       }
     } catch (e) {
       console.error(e);
