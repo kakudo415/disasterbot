@@ -6,6 +6,7 @@ exports.MaxInt = (attachments, Report) => {
   if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
     attachments.text = "@here 最大震度４以上";
   }
+  attachments.fields = [];
   intFields(Report.Body.Intensity.Observation).forEach((field) => {
     attachments.fields.push(field);
   });
