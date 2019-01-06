@@ -45,7 +45,7 @@ module.exports = (bot) => {
         });
       }
     } catch (e) {
-      console.error(e);
+      console.error(e, body, new Date);
       return;
     }
   };
