@@ -59,13 +59,29 @@ module.exports = (bot) => {
       const data = JSON.parse(body);
       const msg = asmMsg(data.Report);
       if (msg) {
-        bot.send({ room: "災害情報" }, msg);
+        // 震度5弱以上で #zatsudan にも投稿
         if (data.Report.Head.InfoKind === "震度速報" || data.Report.Head.InfoKind === "地震情報") {
           const mi = data.Report.Body.Intensity.Observation.MaxInt;
           if (mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
-            bot.send({ room: "zatsudan" }, msg);
+            bot.send({
+              room: "zatsudan"
+            }, msg);
           }
         }
+        // 震度4以上で @here
+        if (data.Report.Head.InfoKind === "震度速報") {
+          if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
+            msg.attachments[0].text = "@here 最大震度４以上";
+          }
+        }
+        // 噴火速報 @here
+        if (data.Report.Head.InfoKind === "噴火速報") {
+          msg.attachments[0].text = "@here 噴火";
+        }
+        // #災害情報 に投稿
+        bot.send({
+          room: "災害情報"
+        }, msg);
       }
     } catch (e) {
       console.error(e);

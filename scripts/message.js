@@ -2,10 +2,6 @@
 
 // 震度速報
 exports.MaxInt = (attachments, Report) => {
-  const mi = Report.Body.Intensity.Observation.MaxInt;
-  if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
-    attachments.text = "@here 最大震度４以上";
-  }
   attachments.fields = [];
   intFields(Report.Body.Intensity.Observation).forEach((field) => {
     attachments.fields.push(field);
@@ -36,10 +32,6 @@ exports.Hypocenter = (attachments, Report) => {
 
 // 地震情報
 exports.Earthquake = (attachments, Report) => {
-  const mi = Report.Body.Intensity.Observation.MaxInt;
-  if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
-    attachments.text = "@here 最大震度４以上";
-  }
   let fields = [];
   fields.push({
     title: "震央地",
@@ -84,7 +76,6 @@ exports.Earthquake = (attachments, Report) => {
 // 噴火速報
 exports.Eruption = (attachments, Report) => {
   let fields = [];
-  attachments.text = "@here 噴火";
   fields.push({
     title: "火山名",
     value: Report.Body.VolcanoInfo.Item.Areas.Area,
