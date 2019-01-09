@@ -11,6 +11,14 @@ module.exports = (bot) => {
   setInterval(() => {
     request.get("https://kakudo.app/kishow/", poll);
   }, 1000);
+  setInterval(() => {
+    const usg = process.memoryUsage();
+    const usgMsg = [];
+    for (let k in usg) {
+      usgMsg.push(`${k}: ${Math.round(usg[k] / 1024 / 1024 * 100) / 100}MiB`); // 小数点第二位までをMiB表示
+    }
+    console.log(new Date(), usgMsg.join(", "));
+  }, 1000 * 60 * 5);
 
   const poll = (err, res, body) => {
     if (err || res.statusCode !== 200) {
@@ -36,7 +44,7 @@ module.exports = (bot) => {
               console.error(err);
             }
           });
-          // 15分で「もう見たキャッシュ」を消す
+          // 15分で「もう見たリスト」から消す
           redis.EXPIRE(`ALERTBOT:${uuid}`, 60 * 15, (err) => {
             if (err) {
               console.error(err);
