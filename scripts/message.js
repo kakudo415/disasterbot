@@ -145,7 +145,7 @@ const intFields = (obs) => {
       let areas = [];
       ToArray(pref.Area).forEach((area) => {
         if (int === area.MaxInt) {
-          areas.push(area.Name);
+          areas.push(area.Name.replace(pref.Name, ""));
         }
       });
       if (areas.length > 0) {
