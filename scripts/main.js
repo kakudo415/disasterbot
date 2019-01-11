@@ -12,13 +12,10 @@ module.exports = (bot) => {
     request.get("https://kakudo.app/kishow/", poll);
   }, 1000);
   setInterval(() => {
+    global.gc();
     const usg = process.memoryUsage();
-    const usgMsg = [];
-    for (let k in usg) {
-      usgMsg.push(`${k}: ${Math.round(usg[k] / 1024 / 1024 * 100) / 100}MiB`); // 小数点第二位までをMiB表示
-    }
-    console.log(new Date(), usgMsg.join(", "));
-  }, 1000 * 60 * 5);
+    console.log(usg.heapUsed);
+  }, 1000);
 
   const poll = (err, res, body) => {
     if (err || res.statusCode !== 200) {
