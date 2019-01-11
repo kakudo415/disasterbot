@@ -11,11 +11,6 @@ module.exports = (bot) => {
   setInterval(() => {
     request.get("https://kakudo.app/kishow/", poll);
   }, 1000);
-  setInterval(() => {
-    global.gc();
-    const usg = process.memoryUsage();
-    console.log(usg.heapUsed);
-  }, 1000);
 
   const poll = (err, res, body) => {
     if (err || res.statusCode !== 200) {
