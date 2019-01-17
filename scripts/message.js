@@ -78,7 +78,7 @@ exports.Eruption = (attachments, Report) => {
   let fields = [];
   fields.push({
     title: "火山名",
-    value: Report.Body.VolcanoInfo.Item.Areas.Area,
+    value: Report.Body.VolcanoInfo[0].Item.Areas.Area.Name,
     short: false
   });
   return attachments;
