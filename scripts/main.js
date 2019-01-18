@@ -70,6 +70,7 @@ module.exports = (bot) => {
         }
         // 震度4以上で @here
         if (data.Report.Head.InfoKind === "震度速報") {
+          const mi = data.Report.Body.Intensity.Observation.MaxInt;
           if (mi === "4" || mi === "5-" || mi === "5+" || mi === "6-" || mi === "6+" || mi === "7") {
             msg.attachments[0].text = "@here 最大震度４以上";
           }

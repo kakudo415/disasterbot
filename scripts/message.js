@@ -24,7 +24,7 @@ exports.Hypocenter = (attachments, Report) => {
   });
   fields.push({
     title: "その他",
-    value: Report.Body.Comments.ForecastCommment.Text,
+    value: Report.Body.Comments.ForecastComment.Text,
     short: false
   });
   return attachments;
