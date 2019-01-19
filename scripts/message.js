@@ -27,6 +27,7 @@ exports.Hypocenter = (attachments, Report) => {
     value: Report.Body.Comments.ForecastComment.Text,
     short: false
   });
+  attachments.fields = fields;
   return attachments;
 };
 
