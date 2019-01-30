@@ -29,7 +29,7 @@ module.exports = (bot) => {
             return;
           }
           // UUIDのリンクから情報を取得して投稿
-          request.get(`https://kakudo.app/kishow/${uuid}`, info);
+          request.get(`https://kakudo.app/kishow/json/${uuid}`, info);
           // 「もう見たリスト」に登録して重複して投稿しないように
           redis.SET(`ALERTBOT:${uuid}`, "MOUMITA", (err) => {
             if (err) {
