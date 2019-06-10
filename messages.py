@@ -6,7 +6,7 @@ def make_attachment(data):
     return {
         'author_name': value(data, 'Report', 'Head', 'Title'),
         'color': '#FF4B00',
-        'footer': data['Report']['Control']['PublishingOffice'] + ' ' + data['Report']['Head']['InfoType']
+        'footer': value(data, 'Report', 'Control', 'PublishingOffice') + ' ' + value(data, 'Report', 'Head', 'InfoType')
     }
 
 def iso6709(src):
@@ -30,17 +30,17 @@ def epicenter_bulletin(data):
     fields = []
     fields.append({
         'title': '震央地',
-        'value': data['Report']['Earthquake']['Hypocenter']['Area']['Name'],
+        'value': value(data, 'Report', 'Earthquake', 'Hypocenter', 'Area', 'Name'),
         'short': True
     })
     fields.append({
         'title': '深さ',
-        'value': iso6709(data['Report']['Body']['Earthquake']['Area']['Coordinate']),
+        'value': iso6709(value(data, 'Report', 'Body', 'Earthquake', 'Area', 'Coordinate')),
         'short': True
     })
     fields.append({
         'title': 'その他',
-        'value': data['Report']['Body']['Comments']['ForecastComment']['Text'],
+        'value': value(data, 'Report', 'Body', 'Comments', 'ForecastComment', 'Text'),
         'short': False
     })
     attachment['fields'] = fields
@@ -52,12 +52,12 @@ def volcano_observation(data):
     fields = []
     fields.append({
         'title': '場所',
-        'value': data['Report']['Body']['VolcanoInfo']['Item']['Areas']['Area']['Name'] + ' ' + data['Report']['Body']['VolcanoInfo']['Item']['Areas']['Area']['CraterName'],
+        'value': value(data, 'Report', 'Body', 'VolcanoInfo', 'Item', 'Areas', 'Area', 'Name') + ' ' + value(data, 'Report', 'Body', 'VolcanoInfo', 'Item', 'Areas', 'Area', 'CraterName'),
         'short': True
     })
     fields.append({
         'title': '現象',
-        'value': data['Report']['Body']['VolcanoInfo']['Item']['Kind']['Name'],
+        'value': value(data, 'Report', 'Body', 'VolcanoInfo', 'Item', 'Kind', 'Name'),
         'short': True
     })
     attachment['fields'] = fields
@@ -65,9 +65,9 @@ def volcano_observation(data):
 
 def other(data):
     attachment = make_attachment(data)
-    if len(data['Report']['Head']['Headline']['Text']) > 0:
-        attachment['text'] = data['Report']['Head']['Headline']['Text']
+    if len(value(data, 'Report', 'Head', 'Headline', 'Text')) > 0:
+        attachment['text'] = value(data, 'Report', 'Head', 'Headline', 'Text')
     else:
-        attachment['text'] = data['Report']['Head']['InfoKind']
+        attachment['text'] = value(data, 'Report', 'Head', 'InfoKind')
     return [attachment]
 
