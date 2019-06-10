@@ -53,9 +53,9 @@ def make_message(data):
     if kind == '震源速報':
         return msg.epicenter_bulletin(data)
     if kind == '地震情報':
-        pass
+        return msg.earthquake_info(data)
     if kind == '噴火速報':
-        pass
+        return msg.eruption_bulletin(data)
     if kind == '噴火に関する火山観測報':
         return volcano_observation(data)
     return msg.other(data)
