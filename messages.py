@@ -1,12 +1,15 @@
+import datetime
 import re
 
 from tools import *
 
 def make_attachment(data):
+    ts = datetime.datetime.fromisoformat(value(data, 'Report', 'Head', 'ReportDateTime'))
     return {
         'author_name': value(data, 'Report', 'Head', 'Title'),
         'color': '#FF4B00',
-        'footer': value(data, 'Report', 'Control', 'PublishingOffice') + ' ' + value(data, 'Report', 'Head', 'InfoType')
+        'footer': value(data, 'Report', 'Control', 'PublishingOffice') + ' ' + value(data, 'Report', 'Head', 'InfoType'),
+        'ts': int(ts.timestamp())
     }
 
 def iso6709(src):
