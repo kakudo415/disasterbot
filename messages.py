@@ -194,6 +194,7 @@ def eruption_bulletin(data):
         'title': '火山名',
         'value': value(data, 'Report', 'Body', 'VolcanoInfo', 'Item', 'Areas', 'Area', 'Name'),
         'short': False
+    })
     attachment['fields'] = fields
     return [attachment]
 
