@@ -6,7 +6,7 @@ import redis
 import requests
 import slack
 
-import message as msg
+import messages as msg
 
 kvs = redis.Redis()
 client = slack.WebClient(token=os.environ['DISASTER_BOT_TOKEN'])
