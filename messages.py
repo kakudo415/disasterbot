@@ -1,8 +1,10 @@
 import re
 
+from tools import *
+
 def make_attachment(data):
     return {
-        'author_name': data['Report']['Head']['Title'],
+        'author_name': value(data, 'Report', 'Head', 'Title'),
         'color': '#FF4B00',
         'footer': data['Report']['Control']['PublishingOffice'] + ' ' + data['Report']['Head']['InfoType']
     }

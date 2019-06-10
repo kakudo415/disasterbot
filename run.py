@@ -7,6 +7,7 @@ import requests
 import slack
 
 import messages as msg
+from tools import *
 
 kvs = redis.Redis()
 client = slack.WebClient(token=os.environ['DISASTER_BOT_TOKEN'])
@@ -41,12 +42,12 @@ def info(uuid):
 
 def make_message(data):
     # 訓練などの情報を無視する
-    status = data['Report']['Control']['Status']
+    status = value(data, 'Report', 'Control', 'Status')
     if status != '通常':
         print('通常ではない情報、スキップしました => ' + status)
         return ''
     # 情報の種類に応じてメッセージを作成する
-    kind = data['Report']['Head']['InfoKind']
+    kind = value(data, 'Report', 'Head', 'InfoKind')
     if kind == '震度速報':
         return msg.seismic_bulletin(data)
     if kind == '震源速報':
@@ -57,7 +58,7 @@ def make_message(data):
         pass
     if kind == '噴火に関する火山観測報':
         return volcano_observation(data)
-    return ''
+    return msg.other(data)
 
 def send(channel, message):
     client.chat_postMessage(channel=channel, attachments=json.dumps(message))
