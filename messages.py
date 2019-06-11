@@ -117,6 +117,7 @@ def enum_intensity(obs):
 def seismic_bulletin(data):
     attachment = make_attachment(data)
     fields = []
+    fields.extend(enum_intensity(value(data, 'Report', 'Body', 'Intensity', 'Observation')))
     attachment['fields'] = fields
     return [attachment]
 
@@ -129,9 +130,11 @@ def epicenter_bulletin(data):
         'value': value(data, 'Report', 'Earthquake', 'Hypocenter', 'Area', 'Name'),
         'short': True
     })
+    depth = iso6709(value(data, 'Report', 'Body', 'Earthquake', 'Hypocenter', 'Area', 'Coordinate'))[2]
+    depth = abs(int(depth)) // 1000
     fields.append({
         'title': '深さ',
-        'value': iso6709(value(data, 'Report', 'Body', 'Earthquake', 'Area', 'Coordinate')),
+        'value': str(depth) + 'km',
         'short': True
     })
     fields.append({
