@@ -57,7 +57,7 @@ def make_message(data):
     if kind == '噴火速報':
         return msg.eruption_bulletin(data)
     if kind == '噴火に関する火山観測報':
-        return volcano_observation(data)
+        return msg.volcano_observation(data)
     return msg.other(data)
 
 def send(channel, message):
