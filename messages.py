@@ -36,7 +36,7 @@ def enum_intensity(obs):
                 if sint == value(area, 'MaxInt'):
                     areas.append(value(area, 'Name').strip(value(pref, 'Name')))
             if len(areas) > 0:
-                fields[-1]['value'] += ' 【{}】{}\n'.format(value(pref, 'Name'), ' '.join(areas))
+                fields[-1]['value'] += '【{}】{}\n'.format(value(pref, 'Name'), '　'.join(areas))
         if len(fields[-1]['value']) == 0:
             fields.pop()
     # 震度ごとに地域をリスト化
@@ -127,7 +127,7 @@ def epicenter_bulletin(data):
     fields = []
     fields.append({
         'title': '震央地',
-        'value': value(data, 'Report', 'Earthquake', 'Hypocenter', 'Area', 'Name'),
+        'value': value(data, 'Report', 'Body', 'Earthquake', 'Hypocenter', 'Area', 'Name'),
         'short': True
     })
     depth = iso6709(value(data, 'Report', 'Body', 'Earthquake', 'Hypocenter', 'Area', 'Coordinate'))[2]
@@ -145,6 +145,7 @@ def epicenter_bulletin(data):
     attachment['fields'] = fields
     return [attachment]
 
+# 地震情報
 def earthquake_info(data):
     attachment = make_attachment(data)
     fields = []
