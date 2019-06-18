@@ -12,15 +12,15 @@ from tools import *
 
 kvs = redis.Redis()
 client = slack.WebClient(token=os.environ['DISASTER_BOT_TOKEN'])
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s %(asctime)s] %(message)s')
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s %(asctime)s] %(message)s', filename='/home/user/disasterbot.log')
 
 def main():
-    logging.info('POLLING')
+    logging.info('POLLING START')
     while True:
         uuids = new_uuids()
         for uuid in uuids:
             data = info(uuid)
-            logging.info('INFORMATION FETCHED {} {}'.format(value(data, 'Report', 'Head', 'Title'), uuid))
+            logging.info('INFO FETCHED {} {}'.format(value(data, 'Report', 'Head', 'Title'), uuid))
             message = make_message(data)
             if len(message) == 0:
                 break
@@ -71,9 +71,9 @@ def make_message(data):
 def send(channel, message, uuid):
     response = client.chat_postMessage(channel=channel, attachments=json.dumps(message))
     if response['ok']:
-        logging.info('MESSAGE SENT {} {}'.format(message[0]['author_name'], uuid))
+        logging.info('POST SUCCESS {} {}'.format(message[0]['author_name'], uuid))
     else:
-        logging.error('MESSAGE SENT FAILED {} {}'.format(message[0]['author_name'], uuid))
+        logging.error('POST FAILURE {} {}'.format(message[0]['author_name'], uuid))
 
 def api_uri(src='/'):
     return 'https://kakudo.app/kishow' + src
