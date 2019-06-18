@@ -226,6 +226,7 @@ def volcano_observation(data):
 def tsunami_info(data):
     attachment = make_attachment(data)
     fields = []
+    attachment['pretext'] = value(data, 'Report', 'Head', 'Headline', 'Text')
     obs = ''
     for item in to_array(value(data, 'Report', 'Body', 'Tsunami', 'Observation', 'Item')):
         obs += '【{}】\n'.format(value(item, 'Area', 'Name'))

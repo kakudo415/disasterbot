@@ -23,6 +23,7 @@ def main():
             logging.info('INFO FETCHED {} {}'.format(value(data, 'Report', 'Head', 'Title'), uuid))
             message = make_message(data)
             if len(message) == 0:
+                logging.info('POST SKIPPED {} {}'.format(value(data, 'Report', 'Head', 'Title'), uuid))
                 break
             send('#災害情報', message, uuid)
             # 震度5弱以上の地震情報をzatsudanに投稿
