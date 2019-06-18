@@ -188,7 +188,7 @@ def earthquake_info(data):
     fields.append({
         'title': 'その他',
         'value': value(data, 'Report', 'Body', 'Comments', 'ForecastComment', 'Text'),
-        'short': True
+        'short': False
     })
     attachment['fields'] = fields
     return [attachment]
@@ -219,6 +219,14 @@ def volcano_observation(data):
         'value': value(data, 'Report', 'Body', 'VolcanoInfo', 'Item', 'Kind', 'Name'),
         'short': True
     })
+    attachment['fields'] = fields
+    return [attachment]
+
+# 津波情報
+def tsunami_info(data):
+    attachment = make_attachment(data)
+    fields = []
+    
     attachment['fields'] = fields
     return [attachment]
 
