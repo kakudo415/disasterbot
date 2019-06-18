@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import logging
 
 import redis
 import requests
@@ -11,21 +12,23 @@ from tools import *
 
 kvs = redis.Redis()
 client = slack.WebClient(token=os.environ['DISASTER_BOT_TOKEN'])
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s %(asctime)s] %(message)s')
 
 def main():
-    print('POLLING START')
+    logging.info('POLLING')
     while True:
         uuids = new_uuids()
         for uuid in uuids:
             data = info(uuid)
+            logging.info('INFORMATION FETCHED {} {}'.format(value(data, 'Report', 'Head', 'Title'), uuid))
             message = make_message(data)
             if len(message) == 0:
                 break
-            send('#災害情報', message)
+            send('#災害情報', message, uuid)
             # 震度5弱以上の地震情報をzatsudanに投稿
             mi = value(data, 'Report', 'Body', 'Intensity', 'Observation', 'MaxInt')
             if value(data, 'Report', 'Head', 'InfoKind') == '地震情報' and (mi == '5-' or mi == '5+' or mi == '6-' or mi == '6+' or mi == '7'):
-                send('#zatsudan', message)
+                send('#zatsudan', message, uuid)
         time.sleep(3) # 3秒に一回ポーリング
 
 def new_uuids():
@@ -65,8 +68,12 @@ def make_message(data):
         return msg.volcano_observation(data)
     return ''
 
-def send(channel, message):
-    client.chat_postMessage(channel=channel, attachments=json.dumps(message))
+def send(channel, message, uuid):
+    response = client.chat_postMessage(channel=channel, attachments=json.dumps(message))
+    if response['ok']:
+        logging.info('MESSAGE SENT {} {}'.format(message[0]['author_name'], uuid))
+    else:
+        logging.error('MESSAGE SENT FAILED {} {}'.format(message[0]['author_name'], uuid))
 
 def api_uri(src='/'):
     return 'https://kakudo.app/kishow' + src
