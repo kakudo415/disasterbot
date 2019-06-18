@@ -226,7 +226,25 @@ def volcano_observation(data):
 def tsunami_info(data):
     attachment = make_attachment(data)
     fields = []
-    
+    obs = ''
+    for item in to_array(value(data, 'Report', 'Body', 'Tsunami', 'Observation', 'Item')):
+        obs += '【{}】\n'.format(value(item, 'Area', 'Name'))
+        for station in to_array(value(item, 'Station')):
+            obs += '　{}: '.format(value(station, 'Name'))
+            if len(value(station, 'MaxHeight', 'TsunamiHeight')) > 0:
+                obs += '{}\n'.format(value(station, 'MaxHeight', 'TsunamiHeight'))
+            else:
+                obs += '{}\n'.format(value(station, 'MaxHeight', 'Condition'))
+    fields.append({
+        'title': 'これまでの最大波',
+        'value': obs,
+        'short': False
+    })
+    fields.append({
+        'title': 'その他',
+        'value': value(data, 'Report', 'Body', 'Comments', 'WarningComment', 'Text'),
+        'short': False
+    })
     attachment['fields'] = fields
     return [attachment]
 
