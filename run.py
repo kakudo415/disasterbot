@@ -21,7 +21,11 @@ def main():
             if len(message) == 0:
                 break
             send('#災害情報', message)
-        time.sleep(10) # 10秒に一回ポーリング
+            # 震度5弱以上の地震情報をzatsudanに投稿
+            mi = value(data, 'Report', 'Body', 'Intensity', 'Observation', 'MaxInt')
+            if value(data, 'Report', 'Head', 'InfoKind') == '地震情報' and (mi == '5-' or mi == '5+' or mi == '6-' or mi == '6+' or mi == '7'):
+                send('#zatsudan', message)
+        time.sleep(3) # 3秒に一回ポーリング
 
 def new_uuids():
     unchecked = []
