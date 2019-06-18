@@ -34,7 +34,7 @@ def enum_intensity(obs):
             areas = []
             for area in to_array(value(pref, 'Area')):
                 if sint == value(area, 'MaxInt'):
-                    areas.append(value(area, 'Name').strip(value(pref, 'Name')))
+                    areas.append(value(area, 'Name').replace(value(pref, 'Name'), '', 1).strip())
             if len(areas) > 0:
                 fields[-1]['value'] += '【{}】{}\n'.format(value(pref, 'Name'), '　'.join(areas))
         if len(fields[-1]['value']) == 0:

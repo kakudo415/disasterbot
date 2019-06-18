@@ -13,6 +13,7 @@ kvs = redis.Redis()
 client = slack.WebClient(token=os.environ['DISASTER_BOT_TOKEN'])
 
 def main():
+    print('POLLING START')
     while True:
         uuids = new_uuids()
         for uuid in uuids:
