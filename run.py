@@ -67,6 +67,8 @@ def make_message(data):
         return msg.eruption_bulletin(data)
     if kind == '噴火に関する火山観測報':
         return msg.volcano_observation(data)
+    if kind == '津波警報注意報予報':
+        return msg.tsunami_alarm(data)
     if kind == '津波情報':
         return msg.tsunami_info(data)
     return ''

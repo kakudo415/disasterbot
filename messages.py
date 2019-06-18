@@ -222,6 +222,14 @@ def volcano_observation(data):
     attachment['fields'] = fields
     return [attachment]
 
+# 津波警報注意報予報
+def tsunami_alarm(data):
+    attachment = make_attachment(data)
+    fields = []
+    attachment['text'] = value(data, 'Report', 'Head', 'Headline', 'Text')
+    attachment['fields'] = fields
+    return [attachment]
+
 # 津波情報
 def tsunami_info(data):
     attachment = make_attachment(data)
