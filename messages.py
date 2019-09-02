@@ -175,12 +175,17 @@ def earthquake_info(data):
         'value': value(data, 'Report', 'Body', 'Earthquake', 'Hypocenter', 'Area', 'Name'),
         'short': True
     })
-    depth = iso6709(value(data, 'Report', 'Body', 'Earthquake', 'Hypocenter', 'Area', 'Coordinate'))[2]
-    depth = abs(int(depth)) // 1000
+    center = iso6709(value(data, 'Report', 'Body', 'Earthquake', 'Hypocenter', 'Area', 'Coordinate'))
+    depth = abs(int(center[2])) // 1000
     fields.append({
         'title': '深さ',
         'value': str(depth) + 'km',
         'short': True
+    })
+    fields.append({
+        'title': '周辺のの地図',
+        'value': 'https://www.google.co.jp/maps/?ll=' + center[0] + ',' + center[1] + '&z=7&q=' + center[0] + ',' + center[1],
+        'short': False
     })
     # 震度ごとの地域リスト
     fields.extend(enum_intensity(value(data, 'Report', 'Body', 'Intensity', 'Observation')))

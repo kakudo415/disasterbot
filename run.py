@@ -30,7 +30,7 @@ def main():
             mi = value(data, 'Report', 'Body', 'Intensity', 'Observation', 'MaxInt')
             if value(data, 'Report', 'Head', 'InfoKind') == '地震情報' and (mi == '5-' or mi == '5+' or mi == '6-' or mi == '6+' or mi == '7'):
                 send('#zatsudan', message, uuid)
-        time.sleep(3) # 3秒に一回ポーリング
+        time.sleep(10) # 3秒に一回ポーリング
 
 def new_uuids():
     unchecked = []
