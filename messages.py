@@ -183,7 +183,7 @@ def earthquake_info(data):
         'short': True
     })
     fields.append({
-        'title': '周辺のの地図',
+        'title': '周辺の地図',
         'value': 'https://www.google.co.jp/maps/?ll=' + center[0] + ',' + center[1] + '&z=7&q=' + center[0] + ',' + center[1],
         'short': False
     })
